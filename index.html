@@ -1,0 +1,1745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pocket Adviser 2027</title>
+<meta name="theme-color" content="#101225">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+
+<style>
+/* Layout idea: bright pastel study app. Lavender page, white cards, gradient subject bands and a purple-to-pink action colour. Single bright theme by choice. */
+:root{
+  --bg:#F3EBFF; --surface:#FFFFFF; --surface2:#EFE8FB; --ink:#1B1535; --muted:#6B6586; --line:#E4DAF5;
+  --accent:#9B3FE0; --on-accent:#FFFFFF; --good:#18A86B; --warn:#C27A06; --bad:#D8433F;
+  --phy:#1F7FC4; --che:#E0523F; --mat:#8450DC; --on-c:#FFFFFF;
+  --g-phy:linear-gradient(135deg,#15809A,#3868D6);
+  --g-che:linear-gradient(135deg,#D63E2D,#E0632B);
+  --g-mat:linear-gradient(135deg,#7E48D8,#C9558A);
+  --grad:linear-gradient(135deg,#A23FE6,#EE3F98);
+  --hero-bg:linear-gradient(135deg,#7A3FE4,#E63E9A); --hero-ink:#FFFFFF; --hero-hi:#FFFFFF;
+  --shadow:0 10px 28px rgba(110,60,200,.12);
+  --f-display:'Bricolage Grotesque',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-body:'DM Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-mono:'DM Mono',ui-monospace,Menlo,Consolas,monospace;
+  --r:22px;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:radial-gradient(800px 260px at 50% -60px,color-mix(in srgb,var(--accent) 14%,transparent),transparent),var(--bg);background-color:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.45;
+  padding:env(safe-area-inset-top) 0 calc(104px + env(safe-area-inset-bottom)) 0}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--accent)}
+.app{max-width:640px;margin:0 auto;padding:0 16px}
+h1,h2,h3{font-family:var(--f-display);margin:0;text-wrap:balance;letter-spacing:-0.01em}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 0 12px}
+.top .brand{font-family:var(--f-display);font-weight:700;font-size:22px;line-height:1.1}
+.top .date{color:var(--muted);font-size:13px;margin-top:2px}
+.topr{display:flex;align-items:center;gap:8px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.cd-chip{font-family:var(--f-mono);font-size:12px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:5px 10px;white-space:nowrap}
+.cd-chip b{font-weight:500;color:var(--accent)}
+.icon-btn{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center;cursor:pointer;color:var(--ink)}
+.icon-btn svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.stack{display:flex;flex-direction:column;gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;box-shadow:var(--shadow)}
+.adviser{background:var(--hero-bg);color:var(--hero-ink);border:none;padding:18px;display:flex;flex-direction:column;gap:10px}
+.adviser .toprow{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.adviser .lbl{font-family:var(--f-mono);font-size:12px;opacity:.8;text-transform:uppercase;letter-spacing:.06em}
+.adviser h2{font-size:24px;margin:4px 0 0;line-height:1.15;color:var(--hero-hi)}
+.adviser p{margin:0;font-size:15px}
+.adviser .lines{padding-top:12px;border-top:1px solid color-mix(in srgb,var(--hero-ink) 22%,transparent);display:flex;flex-direction:column;gap:8px;font-size:14px}
+.ring{flex:none;position:relative;width:64px;height:64px}
+.ring svg{width:64px;height:64px;transform:rotate(-90deg)}
+.ring .tr{stroke:color-mix(in srgb,var(--hero-ink) 22%,transparent)}
+.ring .pg{stroke:var(--hero-hi)}
+.ring span{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--f-display);font-weight:700;font-size:15px}
+.sum{display:flex;flex-direction:column;gap:10px}
+.sumrow{display:flex;justify-content:space-between;gap:10px;align-items:baseline;font-size:14px;color:var(--muted)}
+.sumrow b{font-family:var(--f-display);font-size:22px;color:var(--ink)}
+.bar{height:9px;border-radius:999px;background:var(--surface2);overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--good);border-radius:999px}
+.seg{display:flex;background:var(--surface2);border-radius:12px;padding:4px;gap:4px}
+.seg button{flex:1;border:0;background:transparent;border-radius:9px;padding:8px 10px;font-size:14px;cursor:pointer;min-height:40px}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent);font-weight:700}
+.blk{background:var(--surface);border:1px solid var(--line);border-left:6px solid var(--line);border-radius:var(--r);padding:14px 16px;display:flex;flex-direction:column;gap:8px;box-shadow:var(--shadow)}
+.blk.s-phy{border-left-color:var(--phy)} .blk.s-che{border-left-color:var(--che)} .blk.s-mat{border-left-color:var(--mat)}
+.blk.k-rev,.blk.k-rec,.blk.k-mock,.blk.k-coach{border-left-color:var(--accent)}
+.blk.is-now{box-shadow:0 0 0 2px var(--accent),var(--shadow)}
+.blk.is-done{opacity:.7}
+.bh{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.time{font-family:var(--f-mono);font-size:13px;color:var(--muted)}
+.pill{font-size:12px;font-weight:700;border-radius:999px;padding:3px 10px;background:var(--surface2);color:var(--muted)}
+.s-phy .pill{background:color-mix(in srgb,var(--phy) 16%,var(--surface));color:var(--phy)}
+.s-che .pill{background:color-mix(in srgb,var(--che) 16%,var(--surface));color:var(--che)}
+.s-mat .pill{background:color-mix(in srgb,var(--mat) 16%,var(--surface));color:var(--mat)}
+.blk h3{font-size:19px;line-height:1.25}
+.hint{font-size:13px;color:var(--muted)}
+.brk{display:flex;justify-content:space-between;gap:10px;padding:8px 16px;color:var(--muted);font-size:14px;border:1px dashed var(--line);border-radius:var(--r)}
+.tasks{display:flex;flex-direction:column;gap:2px}
+.task{position:relative;display:flex;gap:12px;align-items:flex-start;min-height:44px;padding:8px 0;cursor:pointer}
+.task input{position:absolute;opacity:0;width:1px;height:1px}
+.task .box{flex:none;width:24px;height:24px;border:2px solid var(--muted);border-radius:8px;display:grid;place-items:center;background:var(--surface)}
+.task input:checked + .box{background:var(--good);border-color:var(--good)}
+.task input:checked + .box::after{content:"";width:6px;height:11px;border:solid var(--on-c);border-width:0 2.5px 2.5px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.task input:focus-visible + .box{outline:3px solid var(--accent);outline-offset:2px}
+.task input:disabled + .box{opacity:.5}
+.task .txt{font-size:15px}
+.task.is-done .txt{color:var(--muted);text-decoration:line-through}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 16px;cursor:pointer;font-weight:700;font-size:14px;min-height:44px;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;color:var(--ink)}
+.btn.primary{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.btn.warn{color:var(--bad);border-color:var(--bad)}
+.btn:focus-visible,.seg button:focus-visible,.mini:focus-visible,.cd:focus-visible,.tab:focus-visible,.pip:focus-visible,.icon-btn:focus-visible,.chipbtn:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.btn[disabled]{opacity:.5;cursor:default}
+.mini{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:6px 12px;font-size:13px;cursor:pointer;min-height:36px}
+.mini[aria-pressed="true"]{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.stagebar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding-top:4px}
+.ok{color:var(--good);font-weight:700;font-size:14px}
+.mine h3{font-size:16px;margin-bottom:4px}
+form.row{display:flex;gap:8px;margin-top:6px}
+input[type=text],input[type=date],input[type=time],select,textarea{width:100%;border:1px solid var(--line);background:var(--bg);border-radius:12px;padding:10px 12px;min-height:44px}
+textarea{min-height:110px;font-family:var(--f-mono);font-size:12px}
+input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--accent);outline-offset:1px}
+.sect{display:flex;flex-direction:column;gap:10px}
+.sect h2{font-size:22px}
+.muted{color:var(--muted);font-size:14px}
+.cal-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.cal-head h2{font-size:20px}
+.dow,.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.dow span{text-align:center;font-size:12px;color:var(--muted);font-family:var(--f-mono)}
+.cd{aspect-ratio:1/1.08;border:1px solid var(--line);border-radius:12px;background:color-mix(in srgb,var(--good) var(--p,0%),var(--surface));padding:4px 5px;display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;cursor:pointer;text-align:left;min-width:0}
+.cd.empty{border:0;background:transparent;cursor:default}
+.cd .n{font-size:14px;font-weight:700}
+.cd.is-today{box-shadow:inset 0 0 0 2px var(--accent)}
+.cd.is-sel{outline:3px solid var(--accent);outline-offset:1px}
+.cd .ex{font-family:var(--f-mono);font-size:9px;background:var(--bad);color:#fff;border-radius:4px;padding:0 3px;line-height:14px}
+.legend{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted)}
+.tabs{position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));max-width:616px;margin:0 auto;background:var(--surface);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow);display:grid;grid-template-columns:repeat(6,1fr);padding:6px}
+.tab{border:0;background:transparent;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;color:var(--muted);font-size:12px;cursor:pointer;min-height:52px;border-radius:18px}
+.tab svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tab[aria-current="page"]{color:var(--on-accent);background:var(--accent);font-weight:700}
+.subj-card{display:flex;flex-direction:column;gap:6px}
+.subj-card .row{display:flex;justify-content:space-between;align-items:baseline}
+.subj-card b{font-family:var(--f-display);font-size:18px}
+.subj-card .bar>i{background:var(--c)}
+.chrow{background:var(--surface);border:1px solid var(--line);border-left:6px solid var(--c);border-radius:var(--r);padding:14px 16px;display:flex;flex-direction:column;gap:8px;box-shadow:var(--shadow)}
+.chrow.is-focus{box-shadow:0 0 0 2px var(--accent),var(--shadow)}
+.chtop{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.chtop b{font-size:16px}
+.hy{font-family:var(--f-mono);font-size:10px;background:color-mix(in srgb,var(--accent) 18%,var(--surface));color:var(--accent);border-radius:5px;padding:1px 6px;margin-left:6px;vertical-align:middle}
+.pips{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.pip{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:8px 2px;font-size:12px;cursor:pointer;min-height:44px;line-height:1.2}
+.pip[aria-pressed="true"]{background:var(--c);border-color:var(--c);color:var(--on-c);font-weight:700}
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px;box-shadow:var(--shadow)}
+.tile b{display:block;font-family:var(--f-display);font-size:26px;color:var(--accent)}
+.tile span{font-size:12px;color:var(--muted)}
+svg.chart text{fill:var(--muted);font-family:var(--f-mono);font-size:9px}
+svg.chart .b{fill:var(--accent)}
+svg.chart .t{stroke:var(--warn);stroke-dasharray:3 3;stroke-width:1}
+.mist{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--line)}
+.mist .txt{flex:1;font-size:15px}
+.mist.fixed .txt{color:var(--muted);text-decoration:line-through}
+.days{display:flex;gap:6px;flex-wrap:wrap}
+.field{display:flex;flex-direction:column;gap:4px}
+.field label{font-size:13px;color:var(--muted)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.links{display:flex;flex-wrap:wrap;gap:8px}
+.pgroup{display:flex;flex-direction:column;gap:6px}
+.prow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid var(--line)}
+.prow .yr{font-family:var(--f-mono);font-size:14px;min-width:44px}
+.prow .chipset{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.chipbtn{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:13px;cursor:pointer;min-height:38px}
+.chipbtn[aria-pressed="true"]{background:var(--good);border-color:var(--good);color:var(--on-c);font-weight:700}
+.prow{flex-direction:column;align-items:stretch;gap:8px}
+.ptop{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.pfiles{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.pdfitem{display:inline-flex;gap:4px}
+.attach{position:relative;display:inline-flex;align-items:center;cursor:pointer;border-style:dashed}
+.attach input{position:absolute;inset:0;opacity:0;width:100%;cursor:pointer}
+.attach:focus-within{outline:3px solid var(--accent);outline-offset:2px}
+.answer{white-space:pre-wrap;background:var(--surface2);border-radius:14px;padding:12px 14px;font-size:15px;line-height:1.55;overflow-wrap:anywhere}
+details.hist{border-top:1px solid var(--line);padding:10px 0}
+details.hist summary{cursor:pointer;font-size:15px;min-height:32px}
+details.hist summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.pcount{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+#toast{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;max-width:90%;text-align:center;z-index:5}
+#toast.on{opacity:1}
+.warnbox{background:color-mix(in srgb,var(--warn) 16%,var(--surface));border:1px solid var(--warn);border-radius:var(--r);padding:10px 14px;font-size:14px}
+@media (prefers-reduced-motion:reduce){#toast{transition:none}}
+
+body{background:radial-gradient(520px 320px at 100% -40px,rgba(238,63,152,.16),transparent),radial-gradient(560px 340px at 0% 0,rgba(124,77,255,.20),transparent),var(--bg);background-color:var(--bg)}
+.adviser{background:var(--hero-bg)}
+.adviser h2{color:#fff}
+.btn.primary{background:var(--grad);border:0;color:#fff}
+.seg button[aria-pressed="true"]{background:var(--grad);color:#fff}
+.mini[aria-pressed="true"]{background:var(--grad);border-color:transparent;color:#fff}
+.tab[aria-current="page"]{background:var(--grad);color:#fff}
+.tabs{border-radius:26px}
+.bar>i{background:linear-gradient(90deg,#18A86B,#6BD9A8)}
+.blk.s-phy,.blk.s-che,.blk.s-mat{border-left-width:1px}
+.blk.s-phy .bh,.blk.s-che .bh,.blk.s-mat .bh{margin:-14px -16px 2px;padding:10px 16px;border-radius:calc(var(--r) - 1px) calc(var(--r) - 1px) 0 0;color:#fff}
+.blk.s-phy .bh{background:var(--g-phy)} .blk.s-che .bh{background:var(--g-che)} .blk.s-mat .bh{background:var(--g-mat)}
+.blk.s-phy .bh .time,.blk.s-che .bh .time,.blk.s-mat .bh .time{color:rgba(255,255,255,.95);font-weight:500}
+.blk.s-phy .pill,.blk.s-che .pill,.blk.s-mat .pill{background:rgba(255,255,255,.26);color:#fff}
+.blk.k-rev,.blk.k-rec,.blk.k-mock,.blk.k-coach{border-left-width:6px;border-image:var(--grad) 1;border-radius:0}
+.blk.k-rev,.blk.k-rec,.blk.k-mock,.blk.k-coach{border-image:none;border-left:1px solid var(--line);border-radius:var(--r);position:relative;overflow:hidden}
+.blk.k-rev::before,.blk.k-rec::before,.blk.k-mock::before,.blk.k-coach::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--grad)}
+.card.subj-card{background:var(--g);color:#fff;border:0}
+.card.subj-card .muted,.card.subj-card b{color:#fff}
+.card.subj-card .bar{background:rgba(255,255,255,.32)}
+.card.subj-card .bar>i{background:#fff}
+.chrow{border-left-width:1px;border-top:6px solid var(--c)}
+.pip[aria-pressed="true"]{background:var(--g);border-color:transparent;color:#fff}
+.tile b{color:var(--accent)}
+.hy{background:color-mix(in srgb,var(--accent) 14%,#fff)}
+.cd.is-today{box-shadow:inset 0 0 0 2px var(--accent)}
+.icon-btn,.cd-chip{box-shadow:0 4px 12px rgba(110,60,200,.10)}
+.task input:checked + .box{background:var(--grad);border-color:transparent}
+.chipbtn[aria-pressed="true"]{background:var(--grad);border-color:transparent;color:#fff}
+.cd{background:color-mix(in srgb,var(--accent) var(--p,0%),var(--surface))}
+.cd .n{color:var(--ink)}
+.cd[style*="--p:3"] .n,.cd[style*="--p:4"] .n,.cd[style*="--p:5"] .n,.cd[style*="--p:6"] .n{color:#fff}
+.tabs{background:#17112B;border-color:#17112B}
+.tab{color:#BDB3DA}
+.tab[aria-current="page"]{color:#fff}
+.brand{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+svg.chart .b{fill:#B03FE0}
+.ring .pg{stroke:#FFE27A}
+.adviser h2{color:#FFF3B8}
+input[type=number]{width:100%;border:1px solid var(--line);background:var(--bg);border-radius:12px;padding:10px 12px;min-height:44px}
+.erow{display:flex;flex-direction:column;gap:8px;padding:12px 0;border-top:1px solid var(--line)}
+.clock{font-family:var(--f-display);font-size:60px;font-weight:700;text-align:center;line-height:1.1;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;font-variant-numeric:tabular-nums}
+.blksel{font-weight:700}
+.chlist{display:flex;flex-direction:column;gap:8px}
+.chline{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--c);border-radius:14px;box-shadow:var(--shadow)}
+.chline.is-focus{box-shadow:0 0 0 2px var(--accent),var(--shadow)}
+.chline.is-held{opacity:.65}
+.chline summary{display:flex;align-items:center;gap:10px;list-style:none;padding:10px 14px;min-height:50px;cursor:pointer}
+.chline summary::-webkit-details-marker{display:none}
+.chline summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:12px}
+.chline .no{font-family:var(--f-mono);font-size:12px;color:var(--muted);min-width:18px}
+.chline .cn{flex:1;font-weight:700;font-size:15px;line-height:1.25}
+.chline .cs{font-size:12px;color:var(--muted);white-space:nowrap}
+.chline .cp{display:flex;gap:3px}
+.chline .dt{width:9px;height:9px;border-radius:50%;background:var(--surface2);border:1px solid var(--line)}
+.chline .dt.on{background:var(--c);border-color:var(--c)}
+.chline .cbody{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
+.blk.k-free{border-left-color:var(--accent)}
+
+/* Smart Hub additions */
+.hubgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.hubstat{background:var(--surface2);border-radius:14px;padding:12px}.hubstat b{display:block;font:700 24px var(--f-display);color:var(--accent)}.hubstat span{font-size:12px;color:var(--muted)}
+.hubitem{border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:8px;background:var(--surface)}
+.hubitem .muted{font-size:12px}.formula{border-top:1px solid var(--line);padding:10px 0;display:flex;flex-direction:column;gap:4px}.formula code{white-space:normal;overflow-wrap:anywhere;background:var(--surface2);padding:8px;border-radius:9px;color:var(--ink);font-size:14px}
+.pwa-note{font-size:12px;color:var(--muted)}.focus-hero{text-align:center;padding:20px 12px;background:var(--surface2);border-radius:18px}
+@media(max-width:380px){.hubgrid{grid-template-columns:1fr}.tabs{left:5px;right:5px;padding:4px}.tab{font-size:10px}}
+
+
+
+/* POCKET ADVISER 2027 — refined editorial study theme */
+:root{
+  --bg:#F4F6F5; --surface:#FFFFFF; --surface2:#EAF0EE; --ink:#172B2A; --muted:#647572; --line:#DCE5E1;
+  --accent:#176B63; --on-accent:#FFFFFF; --good:#27845D; --warn:#A86B18; --bad:#B94B45;
+  --phy:#356B91; --che:#B66A3D; --mat:#6D6597; --on-c:#FFFFFF;
+  --g-phy:#E8F0F5; --g-che:#F5ECE5; --g-mat:#EFEDF5;
+  --grad:#176B63; --hero-bg:#174E49; --hero-ink:#FFFFFF; --hero-hi:#FFFFFF;
+  --shadow:0 3px 14px rgba(28,55,49,.055);
+  --f-display:'DM Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-body:'DM Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-mono:'DM Mono',ui-monospace,Menlo,Consolas,monospace;
+  --r:17px; color-scheme:light;
+}
+body{background:var(--bg)!important;background-image:none!important;color:var(--ink);letter-spacing:0}
+.app{max-width:680px;padding-left:18px;padding-right:18px}
+.top{padding-top:20px;padding-bottom:16px}
+.top .brand{font-size:23px;letter-spacing:-.7px;background:none!important;color:var(--ink)!important;-webkit-text-fill-color:var(--ink)}
+.top .date{font-size:13px;color:var(--muted)}
+h1,h2,h3{letter-spacing:-.35px}
+.card,.blk,.chrow,.chline,.tile{box-shadow:var(--shadow);border-color:var(--line);border-radius:var(--r)}
+.card{padding:17px}
+.adviser{background:var(--hero-bg)!important;color:#fff;border-radius:19px;padding:20px}
+.adviser .lbl{letter-spacing:.09em;color:#C5DAD5;opacity:1}
+.adviser h2,.adviser h2 *{color:#fff!important}
+.adviser .lines{border-top-color:rgba(255,255,255,.2)}
+.ring .pg{stroke:#B9DDD1!important}
+.blk{padding:15px 16px;border-left-width:3px}
+.blk.s-phy .bh,.blk.s-che .bh,.blk.s-mat .bh{margin:-15px -16px 2px;padding:11px 16px;border-radius:16px 16px 0 0;color:var(--ink)}
+.blk.s-phy .bh{background:var(--g-phy)!important}
+.blk.s-che .bh{background:var(--g-che)!important}
+.blk.s-mat .bh{background:var(--g-mat)!important}
+.blk.s-phy .bh .time,.blk.s-che .bh .time,.blk.s-mat .bh .time{color:var(--muted);font-weight:500}
+.blk.s-phy .pill,.blk.s-che .pill,.blk.s-mat .pill{background:rgba(255,255,255,.72);color:var(--ink)}
+.blk.k-rev::before,.blk.k-rec::before,.blk.k-mock::before,.blk.k-coach::before{background:var(--accent)!important;width:4px}
+.blk.is-now,.chrow.is-focus,.chline.is-focus{box-shadow:0 0 0 2px rgba(23,107,99,.22),var(--shadow)}
+.card.subj-card{background:var(--g)!important;color:var(--ink)!important;border:1px solid var(--line)!important}
+.card.subj-card .muted,.card.subj-card b{color:var(--ink)!important}
+.card.subj-card .bar{background:rgba(23,43,42,.10)}
+.card.subj-card .bar>i{background:var(--c)!important}
+.chrow{border-top:0!important;border-left:4px solid var(--c)!important;padding:15px 16px}
+.chrow .chtop b{font-weight:700}
+.btn,.mini,.chipbtn,.icon-btn{border-radius:11px;box-shadow:none;transition:background-color .15s ease,border-color .15s ease,transform .15s ease}
+.btn.primary,.seg button[aria-pressed="true"],.mini[aria-pressed="true"],.tab[aria-current="page"],.pip[aria-pressed="true"],.chipbtn[aria-pressed="true"]{background:var(--accent)!important;border-color:var(--accent)!important;color:#fff!important}
+.btn.primary{font-weight:700}
+.seg{background:#E8EEEB;border-radius:12px}
+.seg button[aria-pressed="true"]{border-radius:9px}
+.pill,.hy{border-radius:7px}
+.hy{background:#E4EFEC!important;color:#176B63!important}
+.bar{background:#E7EEEB}
+.bar>i{background:var(--good)!important}
+.task input:checked + .box{background:var(--good)!important;border-color:var(--good)!important}
+.tabs{background:rgba(255,255,255,.97)!important;border:1px solid var(--line)!important;border-radius:17px!important;box-shadow:0 8px 28px rgba(28,55,49,.12)!important;padding:5px}
+.tab{color:#71817D;border-radius:11px;min-height:52px;font-weight:500}
+.tab[aria-current="page"]{background:#E6F0ED!important;color:#155F57!important;font-weight:700}
+.tab svg{width:21px;height:21px}
+.icon-btn{border-radius:12px}
+.cd-chip{box-shadow:none;border-radius:9px;background:#fff}
+.cd{border-radius:9px}
+.cd.is-today{box-shadow:inset 0 0 0 2px var(--accent)!important}
+.cd.is-sel{outline-color:var(--accent)}
+.tile b{color:var(--accent)!important}
+input[type=text],input[type=date],input[type=time],input[type=number],select,textarea{background:#FBFCFB;border-color:var(--line);border-radius:10px}
+input:focus-visible,select:focus-visible,textarea:focus-visible,.btn:focus-visible,.seg button:focus-visible,.mini:focus-visible,.cd:focus-visible,.tab:focus-visible,.pip:focus-visible,.icon-btn:focus-visible,.chipbtn:focus-visible{outline:3px solid rgba(23,107,99,.28);outline-offset:2px}
+.answer{background:#EDF2F0;border-radius:12px}
+.warnbox{background:#FBF4E8;border-color:#E6C99B;color:#76521F}
+.clock{background:none!important;color:var(--accent)!important;-webkit-text-fill-color:var(--accent)!important}
+#toast{background:#183C38;color:#fff;border-radius:12px}
+@media(max-width:380px){.app{padding-left:13px;padding-right:13px}.card{padding:14px}.top .brand{font-size:21px}.tab{font-size:10px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+
+/* Pocket Adviser 2027 — calm, consistent, accessible visual system */
+:root{
+ --bg:#F5F7F6;--surface:#FFFFFF;--surface2:#EEF3F1;--ink:#182B29;--muted:#657572;--line:#DFE7E3;
+ --accent:#176B63;--on-accent:#FFFFFF;--good:#23845D;--warn:#A66A18;--bad:#B94A45;
+ --phy:#356F9D;--che:#A65D35;--mat:#6C63A8;--on-c:#FFFFFF;
+ --g-phy:#356F9D;--g-che:#A65D35;--g-mat:#6C63A8;--grad:#176B63;
+ --hero-bg:#E7F0ED;--hero-ink:#183D38;--hero-hi:#176B63;
+ --shadow:0 3px 14px rgba(24,43,41,.055);--f-display:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;
+ --f-body:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;--f-mono:ui-monospace,SFMono-Regular,Consolas,monospace;
+ --r:18px;color-scheme:light;
+}
+html{scroll-behavior:smooth;background:var(--bg)}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
+.app{max-width:760px;padding:0 18px}
+.top{padding:20px 0 16px;border-bottom:1px solid var(--line);margin-bottom:16px}
+.top .brand{font-size:22px;font-weight:750;letter-spacing:-.045em}
+.top .date{font-size:12px;color:var(--muted)}
+h1,h2,h3{letter-spacing:-.025em;font-weight:700}
+.card,.blk{border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);background:var(--surface)}
+.card{padding:18px}
+.adviser{background:var(--hero-bg);color:var(--hero-ink);border:1px solid #D6E5DF;border-radius:18px;box-shadow:none}
+.adviser h2{color:var(--hero-ink);font-size:23px}
+.adviser .lbl{color:#54736D;opacity:1}
+.adviser .ring .tr{stroke:#C5D8D1}.adviser .ring .pg{stroke:var(--accent)}
+.adviser .ring span{color:var(--accent)}
+.sumrow b{font-size:21px}
+.bar{background:#E8EFEC;height:8px}.bar>i{background:var(--accent)}
+.blk{border-left-width:4px;padding:15px 16px;box-shadow:none}
+.blk.s-phy{border-left-color:var(--phy)}.blk.s-che{border-left-color:var(--che)}.blk.s-mat{border-left-color:var(--mat)}
+.blk.k-rev,.blk.k-rec,.blk.k-mock,.blk.k-coach{border-left-color:var(--accent)}
+.blk.is-now{box-shadow:0 0 0 2px rgba(23,107,99,.18)}
+.pill{background:#EFF3F1;color:#50635E;font-weight:650}
+.s-phy .pill{background:#EAF1F7;color:#356F9D}.s-che .pill{background:#F7EFE9;color:#A65D35}.s-mat .pill{background:#F0EFF8;color:#6C63A8}
+.btn,.mini,.icon-btn,.tab{transition:background-color .15s ease,border-color .15s ease,transform .15s ease}
+.btn{border-radius:11px;border-color:var(--line);font-weight:650;box-shadow:none}
+.btn.primary,.mini[aria-pressed="true"],.seg button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn:not([disabled]):active,.mini:active,.tab:active{transform:scale(.98)}
+.btn.warn{color:var(--bad);border-color:#E7C9C6;background:#FFF9F8}
+.icon-btn{width:42px;height:42px;border-radius:12px;background:#fff}
+.cd-chip{background:#fff;border:1px solid var(--line);border-radius:9px;color:var(--muted)}
+.cd-chip b{color:var(--accent)}
+.seg{background:#EEF3F1;border-radius:11px}
+.seg button[aria-pressed="true"]{border-radius:8px}
+input[type=text],input[type=date],input[type=time],input[type=number],select,textarea{background:#FBFCFB;border:1px solid #D7E2DD;border-radius:10px;color:var(--ink)}
+input::placeholder,textarea::placeholder{color:#8A9893}
+input:focus-visible,select:focus-visible,textarea:focus-visible,.btn:focus-visible,.seg button:focus-visible,.mini:focus-visible,.cd:focus-visible,.tab:focus-visible,.pip:focus-visible,.icon-btn:focus-visible,.chipbtn:focus-visible{outline:3px solid rgba(23,107,99,.28);outline-offset:2px}
+.tabs{max-width:730px;left:50%;right:auto;transform:translateX(-50%);width:calc(100% - 24px);background:rgba(255,255,255,.97);backdrop-filter:blur(12px);border:1px solid #DCE5E0;border-radius:17px;box-shadow:0 6px 24px rgba(24,43,41,.10);padding:5px;gap:3px}
+.tab{min-width:0;min-height:52px;border:0;border-radius:12px;background:transparent;color:#71807B;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10px;font-weight:650;line-height:1.1;padding:5px 2px}
+.tab svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tab[aria-current="page"]{background:#E8F1EE;color:var(--accent)}
+.pgroup{gap:12px}
+.prow{border-bottom:1px solid #EDF1EF;padding:10px 0}
+.prow:last-child{border-bottom:0}
+.pcount{color:var(--muted)}
+.answer{background:#EDF3F0;border-radius:12px}
+.warnbox{background:#FBF5EA;border-color:#E8D5B2;color:#795A2B}
+.clock{background:none!important;color:var(--accent)!important;-webkit-text-fill-color:var(--accent)!important}
+#toast{background:#183D38;color:#fff;border-radius:12px;box-shadow:0 5px 20px rgba(24,43,41,.18)}
+.task .box{border-radius:7px}
+.task input:checked + .box{background:var(--good);border-color:var(--good)}
+@media(min-width:700px){.app{padding:0 24px}.stack{gap:16px}.card{padding:20px}.tabs{bottom:14px}}
+@media(max-width:420px){.app{padding-left:13px;padding-right:13px}.top .brand{font-size:21px}.tab{font-size:9px}.tabs{left:8px;right:8px;width:auto;transform:none;max-width:none}.card{padding:15px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+/* Pocket Adviser 2027 — native mobile app visual system */
+:root{
+ --bg:#101225;--surface:#1B1E38;--surface2:#242846;--ink:#F7F6FF;--muted:#A4A8C4;--line:#343858;
+ --accent:#8B7CFF;--on-accent:#15172B;--good:#C9F36A;--warn:#F2C66D;--bad:#FF8D83;
+ --phy:#67DDEB;--che:#FF8D83;--mat:#B4A9FF;--on-c:#15172B;
+ --g-phy:#1C5368;--g-che:#653B50;--g-mat:#40376E;--grad:#8B7CFF;
+ --hero-bg:#25234B;--hero-ink:#F7F6FF;--hero-hi:#C9F36A;
+ --shadow:0 8px 24px rgba(0,0,0,.20);--f-display:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;
+ --f-body:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;--f-mono:ui-monospace,SFMono-Regular,Consolas,monospace;
+ --r:20px;color-scheme:dark;
+}
+html,body{background:var(--bg)!important;color:var(--ink)!important}
+body{font-size:15px;line-height:1.48;padding-bottom:calc(100px + env(safe-area-inset-bottom));background:radial-gradient(520px 260px at 50% -100px,rgba(139,124,255,.18),transparent 70%),var(--bg)!important}
+.app{max-width:520px;padding:0 16px;margin:0 auto}
+.top{padding:17px 0 15px;margin:0 0 17px;border:0;border-bottom:1px solid rgba(164,168,196,.14)}
+.top .brand{font-size:22px;font-weight:800;letter-spacing:-.8px;color:var(--ink)!important;background:none!important;-webkit-text-fill-color:var(--ink)!important}
+.top .date{font-size:11px;color:var(--muted);margin-top:4px}
+.topr{gap:7px}.chips{gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.cd-chip{background:#242846!important;border:1px solid #3B4064!important;color:#C5C6DF!important;border-radius:10px;padding:6px 8px;font-size:10px}
+.cd-chip b{color:var(--good)!important}
+.icon-btn{background:var(--surface)!important;border:1px solid var(--line)!important;color:var(--muted)!important;width:40px;height:40px;border-radius:13px}
+.stack{gap:13px}
+h1,h2,h3{color:var(--ink);letter-spacing:-.55px;font-weight:750}
+h1{font-size:25px}h2{font-size:19px}h3{font-size:16px}
+.card,.blk,.chrow,.chline,.tile{background:var(--surface)!important;border:1px solid var(--line)!important;border-radius:18px!important;box-shadow:var(--shadow)!important;color:var(--ink)}
+.card{padding:16px}
+.card.subj-card{background:var(--g)!important;border:1px solid rgba(255,255,255,.10)!important;color:#fff!important}
+.card.subj-card .muted,.card.subj-card b{color:#fff!important}
+.adviser{background:linear-gradient(145deg,#39316F,#24264A)!important;border:1px solid #51498A!important;color:var(--ink)!important;border-radius:22px!important;padding:19px!important}
+.adviser h2{font-size:23px;color:#fff!important}.adviser .lbl{color:#D0C9FF!important}.adviser .ring .tr{stroke:#4B4776!important}.adviser .ring .pg{stroke:var(--good)!important}.adviser .ring span{color:var(--good)!important}
+.sumrow b{font-size:22px;color:var(--good)}
+.bar{background:#3B3F60!important;height:8px;border-radius:20px}.bar>i{background:var(--good)!important;border-radius:20px}
+.blk{padding:14px 15px!important;border-left-width:4px!important;box-shadow:none!important}
+.blk.s-phy{border-left-color:var(--phy)!important}.blk.s-che{border-left-color:var(--che)!important}.blk.s-mat{border-left-color:var(--mat)!important}
+.blk.k-rev,.blk.k-rec,.blk.k-mock,.blk.k-coach{border-left-color:var(--accent)!important}.blk.is-now{box-shadow:0 0 0 1px var(--accent)!important}
+.pill{background:#343858!important;color:#DAD9F3!important;font-weight:700}.s-phy .pill{background:#1D4658!important;color:var(--phy)!important}.s-che .pill{background:#573446!important;color:var(--che)!important}.s-mat .pill{background:#40376E!important;color:var(--mat)!important}
+.btn,.mini,.icon-btn,.tab{transition:background-color .16s ease,border-color .16s ease,transform .16s ease}
+.btn{border-radius:12px;border-color:var(--line)!important;background:var(--surface2)!important;color:var(--ink)!important;font-weight:700;min-height:42px}
+.btn.primary,.mini[aria-pressed="true"],.seg button[aria-pressed="true"]{background:var(--accent)!important;border-color:var(--accent)!important;color:#fff!important}
+.btn.warn{color:var(--bad)!important;border-color:#70424B!important;background:#382432!important}
+.icon-btn:active,.btn:active,.mini:active,.tab:active{transform:scale(.97)}
+.cd-chip b,.clock{color:var(--good)!important;-webkit-text-fill-color:var(--good)!important}
+.seg{background:#14172D!important;border:1px solid var(--line);border-radius:12px;padding:3px}.seg button{color:var(--muted)!important}.seg button[aria-pressed="true"]{background:var(--accent)!important;color:#fff!important;border-radius:9px}
+input[type=text],input[type=date],input[type=time],input[type=number],select,textarea{background:#151831!important;border:1px solid #3A3F62!important;border-radius:11px!important;color:var(--ink)!important;min-height:42px}
+input::placeholder,textarea::placeholder{color:#8187A8!important}
+input:focus-visible,select:focus-visible,textarea:focus-visible,.btn:focus-visible,.seg button:focus-visible,.mini:focus-visible,.cd:focus-visible,.tab:focus-visible,.pip:focus-visible,.icon-btn:focus-visible,.chipbtn:focus-visible{outline:3px solid rgba(139,124,255,.5)!important;outline-offset:2px}
+.task{min-height:48px;align-items:center}.task .box{background:#252A49!important;border-color:#62688C!important;border-radius:7px}.task input:checked + .box{background:var(--good)!important;border-color:var(--good)!important}.task input:checked + .box::after{border-color:#15172B!important}.task .txt{color:var(--ink)}.task.is-done .txt{color:var(--muted)}
+.tabs{z-index:20;max-width:500px!important;left:50%!important;right:auto!important;transform:translateX(-50%)!important;width:calc(100% - 22px)!important;bottom:calc(9px + env(safe-area-inset-bottom))!important;background:rgba(27,30,56,.96)!important;backdrop-filter:blur(18px);border:1px solid #3B4064!important;border-radius:20px!important;box-shadow:0 12px 34px rgba(0,0,0,.4)!important;padding:6px 5px!important;gap:2px!important;grid-template-columns:repeat(6,minmax(0,1fr))!important}
+.tab{min-width:0;min-height:53px!important;border:0!important;border-radius:13px!important;background:transparent!important;color:#9298B9!important;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px!important;font-size:9px!important;font-weight:650;line-height:1.1;padding:5px 1px!important;white-space:nowrap}
+.tab svg{width:19px!important;height:19px!important;stroke:currentColor;fill:none;stroke-width:1.8}
+.tab[aria-current="page"]{background:#393365!important;color:#D4CEFF!important;font-weight:800}
+.pgroup{gap:12px}.prow{border-bottom:1px solid #343858!important;padding:11px 0}.pcount{color:var(--muted)}
+.answer{background:#252846!important;border:1px solid var(--line);border-radius:12px;color:var(--ink)}
+.warnbox{background:#3B3027!important;border-color:#685337!important;color:#F5D79A!important}
+.hubgrid{gap:10px}.hubstat{background:var(--surface2)!important;border-radius:14px;padding:13px}.hubstat b{color:var(--good)!important}.hubitem{background:var(--surface)!important;border:1px solid var(--line)!important;border-radius:15px}
+.formula{border-color:var(--line)!important}.formula code{background:var(--surface2)!important;color:var(--ink)!important;border:1px solid var(--line)}
+.focus-hero{background:linear-gradient(145deg,#25234B,#1B1E38)!important;border:1px solid #403B6C;border-radius:18px;color:var(--ink)}
+.chline{border-left:4px solid var(--accent)!important}.chline summary{color:var(--ink)}.chline .dt{background:#303552;border-color:#555B7B}.chline .dt.on{background:var(--good);border-color:var(--good)}
+.cal-head,.days,.grid,.tile,.ex,.erow,.prow,.field{color:var(--ink)}
+#toast{background:#C9F36A!important;color:#15172B!important;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.muted,.hint,.pwa-note{color:var(--muted)!important}
+@media(min-width:700px){.app{padding:0 20px}.stack{gap:15px}.tabs{bottom:14px!important}}
+@media(max-width:420px){.app{padding-left:14px;padding-right:14px}.top .brand{font-size:21px}.tab{font-size:8px!important}.tab svg{width:18px!important;height:18px!important}.tabs{width:calc(100% - 16px)!important;bottom:calc(7px + env(safe-area-inset-bottom))!important}.card{padding:14px}.chips .cd-chip{font-size:9px;padding:5px 6px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+
+/* Professional dashboard shell — layout and navigation refresh */
+:root{--bg:#101426;--surface:#191f35;--surface2:#222a43;--ink:#edf1ff;--muted:#9ba7c3;--line:#2c3652;--accent:#8b7cff;--good:#bde879;--r:16px;--shadow:0 10px 28px rgba(0,0,0,.16);color-scheme:dark}
+body{min-height:100vh;padding:0!important;background:#101426!important;color:var(--ink)}
+.workspace{min-height:100vh;display:grid;grid-template-columns:252px minmax(0,1fr)}
+.sidebar{position:sticky;top:0;height:100vh;padding:26px 16px 18px;background:#141a2d;border-right:1px solid #29324c;display:flex;flex-direction:column;z-index:10}
+.side-brand{display:flex;align-items:center;gap:11px;padding:2px 10px 30px}.side-brand b{display:block;font:700 16px var(--f-display);letter-spacing:-.3px}.side-brand small{display:block;color:#7f8ba9;font:600 9px var(--f-mono);letter-spacing:1.4px;margin-top:3px}
+.brand-mark{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(145deg,#8d7bff,#6558ce);color:#fff;font:800 19px var(--f-display);box-shadow:0 6px 18px #7768df44}
+.side-caption{padding:0 12px 10px;color:#71809f;font:700 10px var(--f-mono);letter-spacing:1.5px}.side-caption-lower{margin-top:26px}
+.side-group{display:flex;flex-direction:column;gap:5px}.side-link{width:100%;display:flex;align-items:center;gap:13px;padding:11px 12px;min-height:45px;border:0;border-radius:11px;background:transparent;color:#aab5ce;text-align:left;font-size:13px;font-weight:600;cursor:pointer;transition:background .16s,color .16s}.side-link svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;flex:none}.side-link:hover{background:#202943;color:#fff}.side-link[aria-current=page]{background:#29274d;color:#bcb3ff;box-shadow:inset 3px 0 #9789ff}
+.sidebar-bottom{margin-top:auto}.side-tip{display:flex;gap:10px;align-items:center;padding:13px 11px;margin:0 2px 12px;background:#1c2940;border:1px solid #2b3b56;border-radius:12px}.tip-dot{width:8px;height:8px;border-radius:50%;background:#bde879;box-shadow:0 0 0 4px #bde87920}.side-tip b{display:block;font-size:12px}.side-tip small{display:block;color:#8795b1;font-size:11px;margin-top:2px}
+.content-shell{min-width:0}.topbar{height:82px;padding:0 clamp(22px,4vw,54px);display:flex;align-items:center;justify-content:space-between;gap:18px;border-bottom:1px solid #252e48;background:#141a2d}.topbar-left{display:flex;align-items:center;gap:20px}.date-block{display:flex;flex-direction:column;gap:3px}.eyebrow{font:700 9px var(--f-mono);letter-spacing:1.5px;color:#7e8ba9}.date{font-size:13px;color:#aab5ce}.mobile-brand{display:none}.topr{display:flex;align-items:center;gap:10px}.chips{gap:7px}.cd-chip{background:#202943;border:1px solid #303b59;color:#c4cce0;border-radius:9px;padding:7px 10px;font-size:11px}.cd-chip b{color:#c5ef83}.icon-btn{width:38px;height:38px;border-radius:10px;background:#202943;border-color:#303b59;color:#bdc7df;box-shadow:none}.icon-btn svg{width:18px;height:18px}
+.app{max-width:1440px;margin:0 auto;padding:28px clamp(22px,4vw,54px) 54px}.stack{gap:18px}.card{background:#191f35;border:1px solid #2a3450;border-radius:16px;padding:20px;box-shadow:0 8px 22px #05091424}.sect h2,.sect h3{letter-spacing:-.3px}.adviser{background:linear-gradient(115deg,#34316a,#282d55 68%,#1c3850);border:1px solid #48467d;border-radius:18px}.adviser h2{font-size:27px;color:#f3f1ff}.adviser .lbl{color:#c0b9ff}.adviser p{color:#e1e4f4}.ring .pg{stroke:#c5ef83}.bar{background:#2a3450}.btn{border-radius:10px;background:#202943;border-color:#36415f;color:#e8edff}.btn.primary{background:#8275f2;color:#fff;border:1px solid #9488ff}.mini,.chipbtn{background:#202943;border-color:#36415f;color:#dce3f6}.seg{background:#202943}.seg button[aria-pressed=true],.mini[aria-pressed=true]{background:#8275f2}.blk,.chrow,.chline{background:#191f35;border-color:#2c3652;box-shadow:none}.tile{background:#1d2540;border-color:#303b59;box-shadow:none}.tile b{color:#c2ee80}.hubitem{background:#1c2540!important}.hubstat{background:#222d49!important}.answer{background:#222b45!important;color:#e7edff}.focus-hero{background:#202943!important}.tabs{display:none}
+/* content density and responsive dashboard grids */
+#main>.card:first-child{margin-bottom:1px}.sect{gap:13px}.sect h2{font-size:21px}.sect h3{font-size:17px}.muted,.hint{color:#9ba7c3!important}.task .box{background:#202943;border-color:#66718d}.task input:checked + .box{background:#8b7cff}.task .txt{color:#e4e9f8}.subj-card{background:var(--g)!important}.chrow{border-top-width:3px}.chline{border-left:3px solid var(--accent)!important}.warnbox{background:#403626!important;color:#f7dfac!important}
+@media(min-width:1100px){#main{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));align-items:start;gap:18px}#main>.card,#main>.adviser,#main>.blk,#main>.chrow,#main>.sect{grid-column:span 12}#main>.tiles,#main>.hubgrid{grid-column:span 12}.app{padding-top:32px}}
+@media(max-width:850px){.workspace{grid-template-columns:1fr}.sidebar{display:none}.topbar{height:70px;padding:0 16px}.topbar-left{gap:0}.mobile-brand{display:flex;align-items:center;gap:9px}.mobile-brand b{font:700 15px var(--f-display)}.date-block{display:none}.app{padding:18px 16px calc(94px + env(safe-area-inset-bottom))}.tabs{position:fixed;display:grid;grid-template-columns:repeat(5,1fr);left:12px;right:12px;bottom:calc(9px + env(safe-area-inset-bottom));width:auto!important;max-width:560px;margin:0 auto;padding:7px;background:#191f35;border:1px solid #34405f;border-radius:17px;box-shadow:0 12px 34px #05091488;z-index:30}.tab{min-height:49px;padding:5px 2px;gap:3px;border-radius:10px;color:#94a1bf;font-size:10px!important}.tab svg{width:19px!important;height:19px!important}.tab[aria-current=page]{background:#2b2a50;color:#c4bbff}.mobile-more{position:relative;display:block}.mobile-more>summary{list-style:none;cursor:pointer}.mobile-more>summary::-webkit-details-marker{display:none}.more-dots{font-size:20px;line-height:18px;letter-spacing:1px}.more-menu{position:absolute;right:0;bottom:58px;width:180px;padding:7px;background:#1c233b;border:1px solid #394563;border-radius:13px;box-shadow:0 12px 30px #050914aa}.more-item{width:100%;display:flex;align-items:center;gap:10px;padding:11px;border:0;border-radius:8px;background:transparent;color:#e5eaff;text-align:left;font-size:13px}.more-item svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.8}.more-item:hover{background:#2a3150}}
+@media(max-width:480px){.topbar{padding:0 13px}.topr{gap:6px}.chips .cd-chip{font-size:9px;padding:5px 6px}.settings-shortcut{display:none}.app{padding-left:12px;padding-right:12px}.card{padding:15px}.adviser h2{font-size:22px}.tiles{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.tile{padding:10px}.tile b{font-size:22px}.hubgrid{gap:8px}.two{gap:8px}.pips{gap:4px}}
+@media(prefers-reduced-motion:reduce){.side-link{transition:none}}
+
+
+/* POCKET ADVISER — purpose-built study workspace v2 */
+:root{--bg:#0b0d14;--surface:#151923;--surface2:#1d2330;--ink:#f2f4fa;--muted:#929bad;--line:#293140;--accent:#7d83ff;--good:#b9e879;--phy:#5d9dff;--che:#ff7c88;--mat:#aa8cff;--teal:#51c8b2;--shadow:0 18px 48px #0005;--r:18px;color-scheme:dark}
+body{background:radial-gradient(900px 480px at 80% -15%,#24265355,transparent 65%),#0b0d14!important;color:var(--ink);font-family:var(--f-body);padding:0!important;min-height:100vh}
+.workspace{grid-template-columns:238px minmax(0,1fr);min-height:100vh}
+.sidebar{background:#10141d;border-right:1px solid #222a37;padding:28px 15px 18px}
+.side-brand{padding:2px 9px 34px}.brand-mark{border-radius:12px;background:linear-gradient(145deg,#898cff,#5d62d7);box-shadow:0 8px 24px #7478ff33}
+.side-brand b{font-size:15px;letter-spacing:-.3px}.side-brand small{letter-spacing:1.7px;color:#69758a}
+.side-caption{font-size:9px;letter-spacing:1.7px;color:#647087;padding-left:12px}.side-group{gap:7px}.side-link{min-height:47px;padding:0 13px;border-radius:12px;color:#a0a9b9;font-size:13px;font-weight:600;gap:13px}.side-link svg{width:19px;height:19px}.side-link[aria-current=page]{background:#252644;color:#bcbaff;box-shadow:inset 3px 0 #8c8aff}.side-link:hover{background:#1b2230}
+.sidebar-bottom{margin-top:auto}.side-tip{background:#171e2b;border:1px solid #293342;border-radius:13px;padding:13px}.side-tip b{font-size:12px}.side-tip small{color:#8490a3}
+.content-shell{min-width:0}.topbar{height:76px;padding:0 clamp(22px,4vw,60px);background:#0e121b;border-bottom:1px solid #202837}.topbar-left{gap:22px}.eyebrow{font-size:9px;letter-spacing:1.65px;color:#768399}.date{font-size:13px;color:#a7b0c0}.cd-chip{background:#171f2d;border:1px solid #293548;border-radius:9px;color:#b8c2d2;padding:7px 10px}.cd-chip b{color:#c3ef84}.icon-btn{width:39px;height:39px;border-radius:11px;background:#171f2d;border:1px solid #293548;color:#aeb9ca}
+.app{max-width:1500px;padding:38px clamp(20px,4vw,62px) 64px}.stack{gap:20px}.card,.stats-panel{background:#141a25;border:1px solid #273140;border-radius:17px;padding:21px;box-shadow:none}.sect{gap:14px}.sect h2{font-size:24px;letter-spacing:-.6px}.sect h3{font-size:17px}.muted,.hint{color:#8e9aaf!important}.adviser{padding:26px 28px;background:linear-gradient(115deg,#282b5c,#1a2e43 90%);border:1px solid #3c426f;border-radius:20px;box-shadow:0 14px 36px #070b1933}.adviser h2{font-size:29px}.adviser p{max-width:760px;color:#d9def1}.adviser .lines{max-width:850px}.ring .pg{stroke:#c3ee83}
+.tiles{grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}.tile{background:#141a25;border:1px solid #293343;border-radius:15px;padding:17px 18px;box-shadow:none}.tile b{font-size:28px;color:#f2f4fa}.tile span{color:#929eb1;font-size:12px}.bar{height:8px;background:#2b3443}.bar>i{background:linear-gradient(90deg,#777cff,#a28cff)}
+.blk{background:#141a25;border:1px solid #293343;border-left:3px solid #3d4658;border-radius:15px;padding:17px 19px;box-shadow:none;gap:11px}.blk.s-phy{border-left-color:var(--phy)}.blk.s-che{border-left-color:var(--che)}.blk.s-mat{border-left-color:var(--mat)}.blk h3{font-size:17px}.blk.is-now{box-shadow:0 0 0 1px #8584ff,0 8px 28px #7777ff12}.time{color:#a5afc0}.pill{background:#252d3b;color:#b9c2d0}.task{padding:9px 0}.task .box{background:#1b2432;border-color:#556174;border-radius:7px}.task input:checked+.box{background:#b9e879;border-color:#b9e879}.task input:checked+.box:after{border-color:#10141c}.task .txt{color:#e6eaf2}.task.is-done .txt{color:#8290a4}
+.btn,.mini{background:#1c2533;border:1px solid #344052;color:#e5eaf3;border-radius:10px}.btn.primary{background:#777cff;border-color:#8589ff;color:#fff}.btn.warn{color:#ff9a9e;border-color:#76434b}.mini[aria-pressed=true]{background:#777cff;color:#fff;border-color:#777cff}.seg{background:#1b2330;border:1px solid #303a4b}.seg button{color:#aab4c4!important}.seg button[aria-pressed=true]{background:#777cff!important;color:#fff!important}
+input[type=text],input[type=date],input[type=time],input[type=number],select,textarea{background:#111823!important;border:1px solid #303b4d!important;border-radius:10px!important;color:#eef2fa!important}input::placeholder,textarea::placeholder{color:#78869b!important}.field label,.focus-custom label{font-size:11px;font-weight:700;letter-spacing:.8px;color:#9ba8ba}
+.chline{background:#141a25!important;border:1px solid #293343!important;border-radius:13px!important;margin:9px 0;overflow:hidden}.chline summary{padding:15px 13px;gap:12px}.chline .no{background:#232b3b;color:#aeb8c9;border-radius:8px}.chline .cn{font-size:14px}.chline .cs{color:#8c98ac}.chline .cp{gap:4px}.chline .dt{width:7px;height:7px;background:#343e50;border:0}.chline .dt.on{background:#b9e879}.cbody{padding:0 15px 16px}.chline .pips{gap:7px}.chline .pip{border:1px solid #354154;background:#1b2432;color:#c4cede;border-radius:8px;padding:8px 10px}
+.subj-card{background:#141a25!important;border:1px solid #293343!important;border-radius:14px!important;padding:16px!important;margin:10px 0}.subj-card .row{align-items:center}.subj-card b{font-size:15px}.subj-card .bar{margin-top:10px}
+.cal-head h2{font-size:20px}.cd{background:#151d29;border:1px solid #2b3545;border-radius:10px;color:#e5eaf3}.cd.is-today{box-shadow:inset 0 0 0 2px #8184ff}.cd.is-sel{outline:2px solid #8a8bff}.cd.empty{background:transparent}.dow span{color:#8793a8}
+.hubgrid{gap:12px}.hubstat{background:#171f2d!important;border:1px solid #2b3647;border-radius:13px;padding:15px}.hubstat b{color:#c2ed85!important;font-size:24px}.hubitem{background:#171f2d!important;border-color:#2c3748!important}.focus-hero{background:#171f2d!important;border:1px solid #313d50!important;border-radius:18px!important;color:#f2f4fa!important;padding:22px!important}.clock{font-size:42px;color:#f6f7fb}.formula{background:#171f2d;border:1px solid #2d394b;border-radius:12px;padding:13px}.formula code{background:#202a39!important;color:#dce6f4!important}
+.tabs{display:none!important}.mobile-more{display:none}.more-menu{background:#171f2d;border:1px solid #354054;border-radius:13px;box-shadow:0 18px 45px #0009}.more-item{color:#e4eaf4}.more-item:hover{background:#252d40}
+#toast{background:#c1ed82!important;color:#111820!important;border-radius:10px}
+
+.home-heading,.schedule-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:2px}.home-heading h1{font:700 clamp(27px,3vw,36px) var(--f-display);letter-spacing:-1.2px;margin:5px 0}.home-heading p{margin:0;color:#8e9aaf;font-size:13px}.home-focus-link{border:0;border-radius:11px;background:#777cff;color:#fff;padding:12px 16px;font-weight:800;font-size:12px;cursor:pointer;white-space:nowrap}.home-focus-link span{margin-left:9px;font-size:16px}.home-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px;margin:14px 0}.home-metrics>div{position:relative;overflow:hidden;background:#141a25;border:1px solid #293343;border-radius:14px;padding:15px 16px 18px}.home-metrics span{display:block;font-size:9px;letter-spacing:1.15px;font-weight:800;color:#8491a6}.home-metrics b{display:block;font:700 25px var(--f-display);margin-top:9px;letter-spacing:-.5px}.home-metrics b small{font:600 12px var(--f-body);color:#9ba7b9}.home-metric-line{position:absolute;left:0;bottom:0;width:100%;height:3px;background:#777cff}.home-metric-line.teal{background:#58c7b2}.home-metric-line.lime{background:#b9e879}.home-metric-line.blue{background:#579dff}.schedule-heading{margin:20px 0 0}.schedule-heading h2{font:700 20px var(--f-display);margin:5px 0 0}.sum{background:#141a25;border:1px solid #293343;border-radius:15px;padding:18px}.sumrow b{font-size:23px;color:#c2c2ff}.sum .field{max-width:420px}.sum .links{margin-top:3px}
+@media(max-width:900px){.home-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.home-heading{align-items:flex-start}.home-heading p{font-size:12px}.home-focus-link{padding:10px 12px}}
+@media(max-width:520px){.home-heading h1{font-size:27px}.home-heading p{max-width:240px}.home-focus-link{font-size:11px;padding:10px}.home-metrics{gap:8px}.home-metrics>div{padding:12px}.home-metrics span{font-size:8px}.home-metrics b{font-size:22px}.schedule-heading h2{font-size:18px}}
+
+/* Dedicated focus mode */
+.focus-head,.stats-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:5px}.focus-head h1,.stats-head h1{font:700 clamp(27px,3vw,36px) var(--f-display);letter-spacing:-1.2px;margin:5px 0}.focus-head p,.stats-head p{margin:0;color:#8e9aaf;font-size:14px}.focus-today,.stats-period{padding:12px 16px;background:#141b28;border:1px solid #293548;border-radius:12px;min-width:145px}.focus-today span,.stats-period span{display:block;color:#8190a5;font-size:9px;letter-spacing:1.4px;font-weight:700}.focus-today b,.stats-period b{display:block;font-size:18px;margin-top:4px}.focus-workspace{display:grid;grid-template-columns:minmax(250px,.8fr) minmax(340px,1.2fr);gap:18px;background:#141a25;border:1px solid #293343;border-radius:20px;overflow:hidden;min-height:550px}.focus-controls{padding:30px;border-right:1px solid #293343;display:flex;flex-direction:column;gap:27px}.focus-controls .field{display:flex;flex-direction:column;gap:9px}.focus-controls select{max-width:100%}.focus-presets{display:flex;flex-direction:column;gap:12px}.preset-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.preset{border:1px solid #344052;background:#1b2330;color:#c6cfdd;border-radius:11px;min-height:64px;font-size:19px;font-weight:750;cursor:pointer}.preset small{display:block;font-size:10px;font-weight:500;color:#8290a4}.preset.active{background:#29294f;border-color:#777cff;color:#c5c5ff;box-shadow:inset 0 0 0 1px #777cff}.focus-custom{display:flex;flex-direction:column;gap:8px}.focus-remind{display:flex;align-items:center;gap:10px;color:#9ca8b8;font-size:12px;margin-top:auto}.focus-remind input{accent-color:#8b8cff;width:17px;height:17px}.focus-clock-panel{padding:34px 30px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 38%,#25295066,transparent 58%),#111722}.clock-caption{font-size:10px;font-weight:800;letter-spacing:2px;color:#8794a9}.timer-orbit{width:min(300px,72vw);aspect-ratio:1;position:relative;margin:23px auto 25px}.timer-orbit svg{width:100%;height:100%;transform:rotate(-90deg)}.timer-orbit circle{fill:none;stroke-width:7}.orbit-track{stroke:#2b3544}.orbit-progress{stroke:#59c7b1;stroke-linecap:round;stroke-dasharray:653;stroke-dashoffset:135;filter:drop-shadow(0 0 8px #59c7b144)}.orbit-time{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding-top:4px;font:700 clamp(34px,5vw,48px) var(--f-mono);letter-spacing:-2px}.orbit-label{position:absolute;top:62%;left:0;right:0;text-align:center;color:#8f9caf;font-size:12px}.focus-actions{display:flex;gap:10px;width:100%;max-width:390px}.focus-primary{flex:1;min-height:52px;border:0;border-radius:12px;background:linear-gradient(100deg,#777cff,#696ee5);color:#fff;font-weight:800;font-size:14px;cursor:pointer;box-shadow:0 8px 22px #777cff30}.focus-primary span{margin-left:12px;font-size:19px}.focus-stop{padding:0 17px;border:1px solid #3b4657;background:#1b2431;color:#bac4d2;border-radius:12px;cursor:pointer}.focus-footnote{max-width:390px;text-align:center;color:#758298;font-size:11px;margin-top:16px}.focus-bottom{display:grid;grid-template-columns:1fr 1fr;gap:14px}.focus-tip{display:flex;align-items:center;gap:14px;background:#18202d;border:1px solid #2b3748;border-radius:14px;padding:17px}.tip-symbol{width:36px;height:36px;display:grid;place-items:center;border-radius:10px;background:#2b2b51;color:#c1c0ff;font-size:20px}.focus-tip b{font-size:13px}.focus-tip p{font-size:12px;color:#8c99ac;margin:4px 0 0}.focus-mini-stats{display:flex;gap:12px}.focus-mini-stats>div{flex:1;padding:13px 15px;background:#141a25;border:1px solid #293343;border-radius:13px}.focus-mini-stats span{display:block;color:#7f8da3;font-size:9px;letter-spacing:1.1px;font-weight:700}.focus-mini-stats b{display:block;font-size:18px;margin:5px 0}.focus-mini-stats small{font-size:10px;color:#8290a4}
+/* Statistics dashboard */
+.stats-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:20px 0}.stat-kpi{position:relative;overflow:hidden;min-height:128px;padding:18px;background:#151b27;border:1px solid #293343;border-radius:15px}.stat-kpi>span{display:block;font-size:9px;letter-spacing:1.2px;font-weight:800;color:#8996aa}.stat-kpi>b{display:block;font:700 31px var(--f-display);margin-top:13px;letter-spacing:-1px}.stat-kpi>b small{font:600 13px var(--f-body);color:#a5b0c0}.kpi-line{position:absolute;left:0;bottom:0;height:3px;width:100%;background:#777cff}.kpi-line.lime{background:#b9e879}.kpi-line.teal{background:#58c7b2}.kpi-line.blue{background:#579dff}.stats-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:14px;margin-bottom:14px}.stats-panel{padding:21px}.panel-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.panel-heading h2{font:700 17px var(--f-display);margin:0}.panel-heading p{font-size:11px;color:#8794a8;margin:5px 0 0}.panel-total{text-align:right;font:700 22px var(--f-display);white-space:nowrap}.panel-total small{display:block;font:700 8px var(--f-body);letter-spacing:1px;color:#8290a5}.week-chart{height:185px;display:flex;align-items:flex-end;gap:clamp(8px,2vw,22px);padding:17px 10px 0}.week-col{flex:1;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:7px;min-width:0}.week-value{height:14px;font-size:9px;color:#94a0b4}.week-bar-wrap{height:112px;width:min(30px,75%);display:flex;align-items:flex-end;background:#202938;border-radius:7px 7px 3px 3px;overflow:hidden}.week-bar-wrap i{display:block;width:100%;border-radius:7px 7px 3px 3px;background:linear-gradient(180deg,#8e8cff,#5f63d8)}.week-col>span{font-size:10px;color:#8996aa}.streak-panel{background:linear-gradient(145deg,#1b2035,#151a26)}.flame{width:35px;height:35px;display:grid;place-items:center;border-radius:10px;background:#302e4c;color:#c5c1ff}.streak-number{font:750 48px var(--f-display);margin:17px 0 0}.streak-number small{font:600 13px var(--f-body);color:#8d9aaf}.streak-note{font-size:11px;color:#8d9aaf}.streak-dots{display:flex;justify-content:space-between;margin-top:20px;border-top:1px solid #2b3545;padding-top:13px}.streak-dots span{font-size:10px;color:#8b98ab}.subject-panel{margin-bottom:14px}.subject-progress-list{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:20px}.subject-meta{display:flex;justify-content:space-between;font-size:12px;margin-bottom:9px}.subject-meta span{color:#a8b4c5}.subject-track{height:8px;border-radius:20px;background:#2a3443;overflow:hidden}.subject-track i{display:block;height:100%;border-radius:20px;background:#579dff}.subject-track i.che{background:#ff7c88}.subject-track i.mat{background:#aa8cff}.mock-summary{display:flex;align-items:center;gap:12px;margin-top:18px}.mock-summary>b{font:700 28px var(--f-display)}.mock-summary>span{font-size:12px;color:#8e9aaf;flex:1}.mistake-entry{display:grid;grid-template-columns:140px 1fr auto;gap:9px;margin:17px 0}.mistake-entry .focus-primary{padding:0 16px;min-height:44px}.mist{display:flex;justify-content:space-between;align-items:center;gap:10px;border-top:1px solid #293343;padding:11px 0}.mist .task{flex:1}.unresolved{padding:6px 10px;background:#34252e;border-radius:8px;color:#ff9a9e;font-size:10px}.empty-note{color:#8592a6;font-size:12px}
+@media(min-width:1100px){#main{display:block;max-width:1200px;margin:0 auto}.app{padding-top:34px}.stats-kpis{margin-top:24px}}
+@media(max-width:900px){.workspace{grid-template-columns:1fr}.sidebar{display:none}.topbar{height:65px;padding:0 17px}.mobile-brand{display:flex;align-items:center;gap:9px}.mobile-brand b{font:700 15px var(--f-display)}.date-block{display:none}.app{padding:22px 18px calc(104px + env(safe-area-inset-bottom))}.tabs{position:fixed!important;display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;left:50%!important;right:auto!important;transform:translateX(-50%)!important;bottom:calc(9px + env(safe-area-inset-bottom))!important;width:calc(100% - 24px)!important;max-width:520px!important;padding:7px!important;gap:4px!important;background:#171e2b!important;border:1px solid #344054!important;border-radius:18px!important;box-shadow:0 14px 42px #0009!important;z-index:50}.tab{display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;gap:4px!important;min-height:51px!important;padding:5px 2px!important;border-radius:12px!important;color:#8794a8!important;font-size:10px!important;line-height:1!important;white-space:nowrap}.tab svg{width:20px!important;height:20px!important;stroke:currentColor;fill:none;stroke-width:1.8}.tab[aria-current=page]{background:#2b2b50!important;color:#c3c1ff!important}.mobile-more{position:relative;display:block!important}.mobile-more>summary{list-style:none;cursor:pointer}.mobile-more>summary::-webkit-details-marker{display:none}.more-dots{font-size:20px;line-height:17px;letter-spacing:1px}.more-menu{position:absolute;right:0;bottom:59px;width:190px;padding:7px;z-index:55}.more-item{width:100%;display:flex;align-items:center;gap:10px;padding:12px;border:0;border-radius:9px;background:transparent;color:#e5eaf3;text-align:left;font-size:13px}.more-item svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.8}.focus-workspace{grid-template-columns:1fr}.focus-controls{border-right:0;border-bottom:1px solid #293343;padding:22px}.focus-clock-panel{padding:25px 20px}.focus-bottom{grid-template-columns:1fr}.stats-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.stats-grid{grid-template-columns:1fr}.subject-progress-list{grid-template-columns:1fr}.focus-head,.stats-head{align-items:flex-start}.focus-today,.stats-period{min-width:120px}.stats-head .stats-period{display:none}}
+@media(max-width:520px){.app{padding-left:13px;padding-right:13px}.topbar{padding:0 13px}.chips{gap:4px}.cd-chip{font-size:9px;padding:5px 6px}.topr{gap:5px}.topr .icon-btn{width:34px;height:34px}.card,.stats-panel{padding:16px}.adviser{padding:20px}.adviser h2{font-size:23px}.tiles{gap:8px}.tile{padding:13px}.tile b{font-size:23px}.tile span{font-size:10px}.focus-head h1,.stats-head h1{font-size:27px}.focus-head p,.stats-head p{font-size:12px}.focus-today{padding:9px 10px;min-width:105px}.focus-today b{font-size:15px}.focus-controls{padding:17px;gap:21px}.preset-row{gap:6px}.preset{min-height:58px;font-size:17px}.timer-orbit{width:min(270px,76vw)}.orbit-time{font-size:37px}.focus-actions{gap:7px}.focus-primary{font-size:12px;min-height:49px}.focus-stop{padding:0 12px;font-size:12px}.focus-mini-stats{gap:8px}.focus-mini-stats>div{padding:11px}.focus-mini-stats b{font-size:15px}.stats-kpis{gap:8px}.stat-kpi{padding:13px;min-height:110px}.stat-kpi>b{font-size:25px;margin-top:12px}.week-chart{gap:7px;padding-left:0;padding-right:0}.week-bar-wrap{width:24px}.panel-total{font-size:18px}.mistake-entry{grid-template-columns:1fr 1fr}.mistake-entry input{grid-column:1/-1;grid-row:2}.mistake-entry button{grid-column:2;grid-row:1}.mistake-entry select{grid-column:1;grid-row:1}.focus-footnote{font-size:10px}.tabs{width:calc(100% - 18px)!important}.tab{font-size:9px!important}.tab svg{width:19px!important;height:19px!important}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+
+/* Practice and readiness workspace */
+#main .stats-panel{background:#151b27;border:1px solid #293343;border-radius:18px}#main textarea{min-height:88px}.stats-panel .prow{gap:12px}.stats-panel button:disabled{opacity:1;cursor:default}.stats-panel button[data-act="quizpick"]{display:block;min-height:48px}.stats-panel .two{margin:12px 0}.stats-panel form{margin-top:16px}.stats-panel form .field{margin-bottom:12px}
+
+</style>
+</head>
+<body>
+<div class="workspace">
+  <aside class="sidebar" aria-label="Main navigation">
+    <div class="side-brand"><span class="brand-mark">P</span><div><b>Pocket Adviser</b><small>STUDY WORKSPACE</small></div></div>
+    <div class="side-caption">WORKSPACE</div><nav id="sideNav"></nav>
+    <div class="sidebar-bottom"><div class="side-tip"><span class="tip-dot"></span><div><b>Stay consistent</b><small>Small sessions add up.</small></div></div><button class="side-link" data-act="tab" data-t="settings">⚙ <span>Settings</span></button></div>
+  </aside>
+  <div class="content-shell">
+    <header class="topbar">
+      <div class="topbar-left"><div class="mobile-brand"><span class="brand-mark">P</span><b>Pocket Adviser</b></div><div class="date-block"><span class="eyebrow">YOUR STUDY OVERVIEW</span><span class="date" id="topdate"></span></div></div>
+      <div class="topr"><div class="chips" id="chips"></div><button class="icon-btn" data-act="tab" data-t="progress" aria-label="Progress"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M21 20H3"></path></svg></button><button class="icon-btn settings-shortcut" data-act="tab" data-t="settings" aria-label="Settings"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"></path><circle cx="16" cy="7" r="2"></circle><circle cx="8" cy="17" r="2"></circle></svg></button></div>
+    </header>
+    <div class="app"><main id="main" class="stack" aria-live="polite"></main></div>
+  </div>
+</div>
+<nav class="tabs" id="tabs" aria-label="Primary navigation"></nav>
+<div id="toast" role="status"></div>
+<noscript><p style="padding:16px">This planner needs JavaScript turned on.</p></noscript>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function(){
+'use strict';
+
+/* ---------- constants ---------- */
+var LS='pocketAdviser.v1';
+var SUBJ={phy:'Physics',che:'Chemistry',mat:'Maths'};
+var SORDER=['che','phy','mat'];
+var STAGES=['Learn','Exercises','PYQ and MCQ','Revise'];
+var DOW=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+var DOWS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+var MON=['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+/* Chapters in study-priority order per subject. k = chemistry type. hy = high-yield for Boards, GUJCET and JEE Main. */
+var CH=[
+ {id:'c1',s:'che',k:'phys',hy:1,n:'Solutions',note:"Raoult's law, colligative properties, van't Hoff factor"},
+ {id:'c2',s:'che',k:'phys',hy:1,n:'Electrochemistry',note:'Nernst equation, Kohlrausch law, Faraday laws, conductivity'},
+ {id:'c3',s:'che',k:'phys',hy:1,n:'Chemical Kinetics',note:'Rate law, zero and first order equations, half-life, Arrhenius'},
+ {id:'c4',s:'che',k:'inorg',hy:1,n:'Coordination Compounds',note:'Nomenclature, isomerism, VBT and CFT, splitting'},
+ {id:'c5',s:'che',k:'inorg',hy:0,n:'d- and f-Block Elements',note:'Trends, exceptions, KMnO4 and K2Cr2O7 reactions, lanthanoid contraction'},
+ {id:'c6',s:'che',k:'org',hy:1,n:'Aldehydes, Ketones and Carboxylic Acids',note:'Aldol, Cannizzaro, Clemmensen, Wolff-Kishner, HVZ, Rosenmund, Stephen'},
+ {id:'c7',s:'che',k:'org',hy:0,n:'Haloalkanes and Haloarenes',note:'SN1 and SN2, Finkelstein, Swarts, Sandmeyer, Wurtz, Fittig'},
+ {id:'c8',s:'che',k:'org',hy:0,n:'Alcohols, Phenols and Ethers',note:'Williamson, Reimer-Tiemann, Kolbe, Lucas test, hydroboration'},
+ {id:'c9',s:'che',k:'org',hy:0,n:'Amines',note:'Gabriel, Hoffmann bromamide, carbylamine, diazotisation, Hinsberg'},
+ {id:'c10',s:'che',k:'org',hy:0,n:'Biomolecules',note:'Glucose structure, peptide bond, DNA and RNA, vitamins table'},
+
+ {id:'p1',s:'phy',hy:1,n:'Dual Nature of Radiation and Matter',note:"Derivations: Einstein's photoelectric equation, de Broglie wavelength, Davisson-Germer"},
+ {id:'p2',s:'phy',hy:1,n:'Atoms',note:'Derivations: Bohr radius and energy levels, spectral series'},
+ {id:'p3',s:'phy',hy:1,n:'Nuclei',note:'Derivations: binding energy curve, radioactive decay law, half-life'},
+ {id:'p4',s:'phy',hy:1,n:'Semiconductor Electronics',note:'Derivations: p-n junction, rectifiers, Zener, logic gates'},
+ {id:'p5',s:'phy',hy:1,n:'Current Electricity',note:'Derivations: drift velocity, resistivity, Kirchhoff rules, Wheatstone bridge, potentiometer'},
+ {id:'p6',s:'phy',hy:1,n:'Electric Charges and Fields',note:'Derivations: field on axis and equator of a dipole, Gauss law uses'},
+ {id:'p7',s:'phy',hy:1,n:'Electrostatic Potential and Capacitance',note:'Derivations: dipole potential, parallel plate capacitor, energy stored'},
+ {id:'p8',s:'phy',hy:1,n:'Ray Optics and Optical Instruments',note:"Derivations: lens maker's formula, prism, refraction at spherical surface, microscope, telescope"},
+ {id:'p9',s:'phy',hy:0,n:'Wave Optics',note:"Derivations: Huygens' principle, Young's double slit fringe width, single slit diffraction"},
+ {id:'p10',s:'phy',hy:0,n:'Moving Charges and Magnetism',note:"Derivations: Biot-Savart on loop axis, Ampere's law for solenoid, cyclotron, galvanometer"},
+ {id:'p11',s:'phy',hy:0,n:'Magnetism and Matter',note:"Derivations: bar magnet as solenoid, Earth's magnetism elements"},
+ {id:'p12',s:'phy',hy:0,n:'Electromagnetic Induction',note:'Derivations: motional emf, self and mutual inductance'},
+ {id:'p13',s:'phy',hy:0,n:'Alternating Current',note:'Derivations: LCR series impedance, resonance, transformer'},
+ {id:'p14',s:'phy',hy:0,n:'Electromagnetic Waves',note:'Displacement current, wave properties, spectrum'},
+
+ {id:'m1',s:'mat',hy:1,n:'Matrices',note:'Operations, transpose, inverse by elementary operations'},
+ {id:'m2',s:'mat',hy:1,n:'Determinants',note:'Properties, area of triangle, adjoint and inverse, linear equations'},
+ {id:'m3',s:'mat',hy:1,n:'Vector Algebra',note:'Dot and cross product, projection, scalar triple product'},
+ {id:'m4',s:'mat',hy:1,n:'Three Dimensional Geometry',note:'Direction ratios, line and plane forms, shortest distance, angles'},
+ {id:'m5',s:'mat',hy:0,n:'Continuity and Differentiability',note:'Chain rule, implicit and logarithmic differentiation, Rolle and MVT'},
+ {id:'m6',s:'mat',hy:0,n:'Applications of Derivatives',note:'Rate of change, tangent and normal, maxima and minima'},
+ {id:'m7',s:'mat',hy:1,n:'Integrals',note:'Substitution, parts, partial fractions, definite integral properties'},
+ {id:'m8',s:'mat',hy:0,n:'Applications of Integrals',note:'Area under curves and between curves'},
+ {id:'m9',s:'mat',hy:1,n:'Differential Equations',note:'Order and degree, variable separable, homogeneous, linear'},
+ {id:'m10',s:'mat',hy:0,n:'Relations and Functions',note:'Types of relations and functions, composition, invertibility'},
+ {id:'m11',s:'mat',hy:0,n:'Inverse Trigonometric Functions',note:'Principal values, properties, simplification'},
+ {id:'m12',s:'mat',hy:0,n:'Probability',note:'Conditional probability, Bayes theorem, binomial distribution'},
+ {id:'m13',s:'mat',hy:0,n:'Linear Programming',note:'Graphical method, corner point rule'}
+];
+
+var TIPS=[
+ 'Chemistry: write it, do not reread it. Close the book and write 10 reactions or formulas from memory. That is what stops the forgetting.',
+ 'Physics numericals: solve every NCERT solved example first. GSEB often repeats them with changed numbers.',
+ 'Stuck on one problem for more than 10 minutes? Mark it, move on, and log it in Progress under Mistakes.',
+ 'Maths: after each NCERT chapter, do the Exemplar MCQs the same day while the method is fresh.',
+ 'Skip pretty notes. Use NCERT, your coaching notes and short sheets of your own.',
+ 'Sleep 6 to 7 hours. Recall drops fast when sleep is cut, and recall is your weak point in Chemistry.',
+ 'Redo yesterday\'s mistakes before you start new questions.',
+ 'GUJCET is Class 12 NCERT only. Every NCERT line you read for Boards also counts for GUJCET.',
+ 'Watch a 1.5 to 2 hour one-shot only when you are stuck, then start solving at once.',
+ 'Inorganic Chemistry: read NCERT line by line. Boards and GUJCET lift exact lines from it.'
+];
+
+/* ---------- date and time helpers ---------- */
+function pad(n){return String(n).padStart(2,'0');}
+function ymd(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+function parse(s){var p=s.split('-').map(Number);return new Date(p[0],p[1]-1,p[2]);}
+function addDays(s,n){var d=parse(s);d.setDate(d.getDate()+n);return ymd(d);}
+function diffDays(a,b){return Math.round((parse(a)-parse(b))/864e5);}
+function today(){return ymd(new Date());}
+function toMin(t){var p=t.split(':');return (+p[0])*60+(+p[1]);}
+function t12(min){min=((min%1440)+1440)%1440;var h=Math.floor(min/60),m=min%60,ap=h>=12?'PM':'AM';h=h%12||12;return h+':'+pad(m)+' '+ap;}
+function longDate(s){var d=parse(s);return DOW[d.getDay()]+', '+d.getDate()+' '+MON[d.getMonth()];}
+function esc(x){return String(x).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function hm(mins){var h=Math.floor(mins/60),m=mins%60;return h>0?(h+'h '+pad(m)+'m'):(m+'m');}
+
+/* ---------- state ---------- */
+var storageOK=true;
+var state;
+// Supabase free-tier cloud sync. Only the publishable key is embedded in this client.
+var SB_URL='https://yyqloliogtfkvnpgprgw.supabase.co';
+var SB_KEY='sb_publishable_oDqVRnsAJg5eHas25eIjqQ_qHPoU-qg';
+var sbClient=(window.supabase&&window.supabase.createClient)?window.supabase.createClient(SB_URL,SB_KEY):null;
+var sbUser=null,sbBusy=false,sbTimer=null,sbStatus='Not signed in';
+function setSyncStatus(s){sbStatus=s;var el=document.getElementById('sync-status');if(el)el.textContent=s;}
+async function syncPush(){
+  if(!sbClient||!sbUser||sbBusy)return;
+  sbBusy=true;setSyncStatus('Syncing…');
+  try{
+    var row={id:'main',user_id:sbUser.id,record_type:'app_state',data:state,updated_at:new Date().toISOString()};
+    var res=await sbClient.from('user_records').upsert(row,{onConflict:'user_id,id'});
+    if(res.error)throw res.error;
+    setSyncStatus('Synced · '+new Date().toLocaleTimeString());
+  }catch(e){setSyncStatus('Sync error · check connection');}
+  finally{sbBusy=false;}
+}
+function queueSync(){if(!sbUser)return;clearTimeout(sbTimer);sbTimer=setTimeout(syncPush,1200);}
+async function connectCloud(mode){
+  if(!sbClient){toast('Cloud service could not load. Check internet.');return;}
+  var email=(document.getElementById('cloud-email')||{}).value||'';
+  var password=(document.getElementById('cloud-password')||{}).value||'';
+  if(!email.trim()||!password){toast('Enter email and password.');return;}
+  setSyncStatus('Connecting…');
+  try{
+    var result= mode==='signup' ? await sbClient.auth.signUp({email:email.trim(),password:password}) : await sbClient.auth.signInWithPassword({email:email.trim(),password:password});
+    if(result.error)throw result.error;
+    if(!result.data.session){setSyncStatus('Check your email to confirm account');toast('Account created. Confirm your email, then sign in.');return;}
+    sbUser=result.data.user;await loadCloudState();render();
+    toast(mode==='signup'?'Account created and sync enabled.':'Cloud sync connected.');
+  }catch(e){setSyncStatus('Sign-in failed');toast(e.message||'Could not connect.');}
+}
+async function loadCloudState(){
+  if(!sbClient||!sbUser)return;
+  setSyncStatus('Loading cloud data…');
+  try{
+    var res=await sbClient.from('user_records').select('data,updated_at').eq('user_id',sbUser.id).eq('id','main').maybeSingle();
+    if(res.error)throw res.error;
+    if(res.data&&res.data.data){
+      var remoteTime=Date.parse(res.data.updated_at||0);
+      var localTime=Number(localStorage.getItem(LS+'.cloudUpdated')||0);
+      if(remoteTime>localTime){state=normaliseState(res.data.data);localStorage.setItem(LS,JSON.stringify(state));}
+    }else{await syncPush();return;}
+    localStorage.setItem(LS+'.cloudUpdated',String(Date.now()));setSyncStatus('Cloud sync ready');
+  }catch(e){setSyncStatus('Cloud load failed');toast('Could not load cloud data. Local data is safe.');}
+}
+async function initCloud(){
+  if(!sbClient){setSyncStatus('Cloud SDK unavailable');return;}
+  try{var r=await sbClient.auth.getSession();if(r.data.session){sbUser=r.data.session.user;await loadCloudState();if(tab==='settings')render();}}
+  catch(e){setSyncStatus('Offline · local save active');}
+  sbClient.auth.onAuthStateChange(function(event,session){
+    sbUser=session&&session.user?session.user:null;
+    if(sbUser){setTimeout(function(){loadCloudState().then(function(){render();});},0);}
+    else{setSyncStatus('Not signed in');render();}
+  });
+}
+async function disconnectCloud(){if(sbClient)await sbClient.auth.signOut();sbUser=null;setSyncStatus('Not signed in');render();}
+
+function DEF(){return {
+  v:2,start:today(),papers:{},pdfs:[],doubts:[],templates:[],defTpl:null,dayOver:{},hold:{},timer:null,focusMin:{},remind:false,notifyEnabled:false,alertSent:'',practiceQuestions:[],practiceLogs:[],quizSession:null,pyqStatus:{},stage:{},focus:{},done:{},snap:{},modes:{},custom:{},mistakes:[],last:{},extra:[],mockTests:[],revision:[],plannerHours:4,focusSessions:[],
+  coachDays:[false,false,false,false,false,false,false],cs:'09:30',ce:'17:30',
+  exams:{jee1:'2027-01-22',board:'2027-02-25',gujcet:'2027-03-20',jee2:'2027-04-02'}
+};}
+function normaliseState(o){
+  var d=DEF();
+  if(!o||typeof o!=='object'||Array.isArray(o)) return d;
+  var x=Object.assign(d,o);
+  x.exams=Object.assign(DEF().exams,o.exams&&typeof o.exams==='object'?o.exams:{});
+  ['papers','pyqStatus','stage','focus','done','snap','modes','custom','hold','dayOver','focusMin','last'].forEach(function(k){if(!x[k]||typeof x[k]!=='object'||Array.isArray(x[k])) x[k]={};});
+  ['pdfs','doubts','templates','mistakes','extra','mockTests','revision','focusSessions','practiceQuestions','practiceLogs'].forEach(function(k){if(!Array.isArray(x[k])) x[k]=[];});
+  x.plannerHours=Number.isFinite(Number(x.plannerHours))?Math.max(1,Math.min(14,Number(x.plannerHours))):4;
+  x.coachDays=Array.isArray(x.coachDays)?x.coachDays.slice(0,7):d.coachDays;
+  while(x.coachDays.length<7) x.coachDays.push(false);
+  if(typeof x.cs!=='string') x.cs=d.cs;
+  if(typeof x.ce!=='string') x.ce=d.ce;
+  if(typeof x.start!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(x.start)) x.start=d.start;
+  return x;
+}
+function load(){
+  var raw=null,s=null;
+  try{raw=localStorage.getItem(LS);}catch(e){storageOK=false;}
+  if(raw){try{s=JSON.parse(raw);}catch(e){s=null;}}
+  state=normaliseState(s);
+  try{localStorage.setItem(LS+'.t','1');localStorage.removeItem(LS+'.t');}catch(e){storageOK=false;}
+}
+function save(){try{localStorage.setItem(LS,JSON.stringify(state));}catch(e){storageOK=false;}queueSync();}
+
+/* ---------- chapters ---------- */
+function allCh(){return CH.concat(state.extra.map(function(e){return {id:e.id,s:e.s,k:'x',hy:0,n:e.n,note:'Chapter you added',custom:1};}));}
+function chs(s){return allCh().filter(function(c){return c.s===s;});}
+function chById(id){return allCh().filter(function(c){return c.id===id;})[0]||null;}
+function st(id){return state.stage[id]||0;}
+
+function phaseOf(date){
+  var e=state.exams;
+  if(date<'2027-01-01'&&date<e.jee1) return 'p1';
+  if(date<e.jee1) return 'p2';
+  if(date<e.board) return 'p3';
+  return 'p4';
+}
+function curChapter(s,date){
+  var list=chs(s),ph=phaseOf(date||today()),f=state.focus[s],i,c;
+  if(f){c=list.filter(function(x){return x.id===f;})[0];if(c&&st(c.id)<4) return c;}
+  var open=list.filter(function(x){return st(x.id)<4&&!state.hold[x.id];});
+  if(!open.length) open=list.filter(function(x){return st(x.id)<4;});
+  if(!open.length) return null;
+  if(ph==='p1'){
+    c=open.filter(function(x){return st(x.id)<2;})[0];if(c) return c;
+  }else if(ph==='p2'){
+    c=open.filter(function(x){return st(x.id)===2;})[0]||open.filter(function(x){return st(x.id)<2;})[0];if(c) return c;
+  }
+  var best=open[0];
+  for(i=0;i<open.length;i++){if(st(open[i].id)<st(best.id)) best=open[i];}
+  return best;
+}
+
+/* ---------- plan engine ---------- */
+function modeOf(date){
+  if(state.dayOver[date]) return 'over';
+  var m=state.modes[date];
+  if(m){if(m.indexOf('t:')===0&&!tplById(m.slice(2))) m=null;else return m;}
+  if(state.coachDays[parse(date).getDay()]) return 'coach';
+  if(state.defTpl&&tplById(state.defTpl)) return 't:'+state.defTpl;
+  return 'self';
+}
+function mockDay(date){var n=diffDays(date,'2027-01-01');return n>=0&&n%3===2;}
+
+function getSnap(date){
+  if(state.snap[date]) return state.snap[date];
+  var sn={};
+  SORDER.forEach(function(s){var c=curChapter(s,date);sn[s]=c?{ch:c.id,st:st(c.id)}:null;});
+  if(date===today()){state.snap[date]=sn;save();}
+  return sn;
+}
+function retarget(s){
+  var t=today(),sn=state.snap[t];
+  if(!sn) return;
+  var touched=Object.keys(state.done[t]||{}).some(function(k){return k.split('|')[0].split('#')[0]===s;});
+  if(touched) return;
+  var c=curChapter(s,t);
+  sn[s]=c?{ch:c.id,st:st(c.id)}:null;
+}
+
+function stageTasks(s,c,g){
+  var n=c.n,note=c.note;
+  if(s==='che'){
+    if(g===0){
+      if(c.k==='org') return ['Read NCERT '+n+' line by line and list every reaction and reagent','Add each reaction to your Reaction Notebook ('+note+')','Close the book and write 5 conversions from memory'];
+      if(c.k==='inorg') return ['Read NCERT '+n+' line by line; highlight exceptions and trends','Write trends, colours and exceptions on one sheet ('+note+')','Close the book and recall 10 facts from memory'];
+      return ['Read NCERT '+n+' and note every formula','Write all formulas on your formula sheet ('+note+')','Work the NCERT solved examples to lock the formulas in'];
+    }
+    if(g===1) return ['Solve the NCERT in-text questions of '+n,'Solve the NCERT back exercise of '+n,'Redo every question you got wrong and log it under Mistakes'];
+    if(g===2) return ['Solve 25 GUJCET and JEE PYQ MCQs of '+n,'Log each wrong answer under Mistakes','Rewrite the correct method for each wrong answer'];
+    return ['Write the full '+n+' recall sheet from memory, then check it against NCERT','Redo the Mistakes items from '+n,'Solve 10 quick MCQs of '+n];
+  }
+  if(s==='phy'){
+    if(g===0) return ['Watch a short concept video or read NCERT '+n+'; note every formula','Copy the key derivations into your derivation notebook ('+note+')','Write 2 derivations from memory without looking'];
+    if(g===1) return ['Solve every NCERT solved example of '+n,'Solve the NCERT back exercise of '+n,'Mark the numericals you missed and log them under Mistakes'];
+    if(g===2) return ['Solve 20 JEE Main and GUJCET PYQs of '+n+' (2021 to 2026)','Log each wrong answer under Mistakes','Re-solve 5 numericals you missed'];
+    return ['Write all derivations of '+n+' from memory','Make a one-page formula sheet for '+n,'Solve 10 mixed MCQs of '+n];
+  }
+  if(g===0) return ['Read NCERT '+n+' theory and work the solved examples','Write every formula and identity of '+n+' on a half sheet ('+note+')','Mark the 3 hardest concepts and revisit them tomorrow'];
+  if(g===1) return ['Do all NCERT exercises of '+n+', including the Miscellaneous exercise','Solve the NCERT Exemplar MCQs of '+n,'Redo the problems you got wrong'];
+  if(g===2) return ['Solve 20 GUJCET and JEE PYQs of '+n+', timed','Log each wrong answer under Mistakes','Re-solve 5 problems you missed'];
+  return ['Revise the formulas of '+n+' from memory','Solve 10 quick mixed problems of '+n,'Redo the Mistakes items from '+n];
+}
+function fallbackTasks(s){
+  return ['Every '+SUBJ[s]+' chapter is finished. Solve 25 mixed PYQs across chapters','Redo the '+SUBJ[s]+' items in Mistakes','Pick your weakest chapter and rewrite its formula sheet from memory'];
+}
+
+function buildDay(date){
+  var mode=modeOf(date),phase=phaseOf(date),snap=getSnap(date),m=toMin,T;
+  function rowsToT(rows){return rows.map(function(r){return [r.t,m(r.s),m(r.e),r.n||''];}).sort(function(a,b){return a[1]-b[1];});}
+  if(mode==='over'){
+    T=rowsToT(state.dayOver[date]);
+  }else if(mode.indexOf('t:')===0){
+    T=rowsToT(tplById(mode.slice(2)).blocks);
+  }else if(mode==='self'){
+    T=[['rev',m('08:00'),m('08:45')],['che',m('09:00'),m('12:00')],['lunch',m('12:00'),m('13:30')],['phy',m('13:30'),m('16:30')],['brk',m('16:30'),m('17:30')],['mat',m('17:30'),m('20:30')],['din',m('20:30'),m('21:30')],['rec',m('21:30'),m('22:30')]];
+  }else{
+    var cs=m(state.cs),ce=m(state.ce);
+    T=[['rev',cs-75,cs-30],['coach',cs,ce],['che',ce+30,ce+120],['din',ce+120,ce+150],['phy',ce+150,ce+240],['mat',ce+240,ce+285],['rec',ce+285,ce+310]];
+  }
+  var mock=(mode==='self'&&phase==='p2'&&mockDay(date));
+  var dow=parse(date).getDay(),cnt={};
+  var blocks=T.map(function(row){
+    var id=row[0],b={id:id,s:row[1],e:row[2],date:date,tasks:[],kind:'break',subj:null,ch:null,stage:0,title:'',sub:''};
+    if(mock&&id==='phy'){b.id='mock';id='mock';}
+    cnt[id]=(cnt[id]||0)+1;
+    if(cnt[id]>1) b.id=id+'#'+cnt[id];
+    if(id==='che'||id==='phy'||id==='mat'){
+      var sn=snap[id],c=sn?chById(sn.ch):null,g=sn?sn.st:0;
+      if(!c){c=curChapter(id,date);g=c?st(c.id):0;}
+      b.kind='sub';b.subj=id;b.ch=c;b.stage=g;
+      b.title=c?c.n:SUBJ[id]+' full revision';
+      b.sub=c?c.note:'';
+      var arr=c?stageTasks(id,c,g):fallbackTasks(id);
+      b.tasks=arr.map(function(t,i){return {key:id+'|'+(c?c.id:'-')+'|'+g+'|'+i,text:t};});
+      if(id==='mat'&&mock) b.tasks.unshift({key:'mat|ana|0|0',text:'Analyse today\'s mock (45 min): write why each wrong answer happened'});
+    }else if(id==='mock'){
+      b.kind='mock';b.title='Full-length JEE Main mock';b.sub='3 hours, timed, no breaks';
+      b.tasks=[{key:'mock|x|0|0',text:'Take the 3-hour mock (use the next unsolved JEE Main paper from the Papers tab). Aim to attempt about 40 to 45% accurately and skip tough questions without panic'},{key:'mock|x|0|1',text:'Log every wrong or skipped question under Mistakes'}];
+    }else if(id==='rev'){
+      b.kind='rev';b.title='Morning revision';b.sub='Active recall beats reading';
+      var lc=state.last.che,lp=state.last.phy,cc=lc&&chById(lc.ch),pc=lp&&chById(lp.ch),tk=[];
+      if(!cc&&!pc){
+        tk=[{key:'rev|-|0|0',text:'Day 1 setup: flip through the contents pages of all three NCERT books (15 min)'},{key:'rev|-|0|1',text:'Set up three notebooks: Reaction and Formula, Derivation, Mistakes'}];
+      }else{
+        if(cc) tk.push({key:'rev|'+cc.id+'|0|0',text:'Chemistry (30 min): write the reactions and formulas of '+cc.n+' from memory, then check'});
+        if(pc) tk.push({key:'rev|'+pc.id+'|0|1',text:'Physics (15 min): rewrite 2 derivations of '+pc.n+' without the book'});
+      }
+      b.tasks=tk;
+    }else if(id==='rec'){
+      b.kind='rec';b.title='Daily recap';b.sub='Close the day properly';
+      b.tasks=[{key:'rec|x|0|0',text:'Solve 15 to 20 mixed MCQs from today\'s topics'},{key:'rec|x|0|1',text:'Write 10 reactions or formulas on a blank sheet without the book'},{key:'rec|x|0|2',text:'Tick today\'s tasks, then check tomorrow\'s chapter targets'}];
+      if(dow===0) b.tasks.push({key:'rec|x|0|3',text:'Weekly review (30 min): update Syllabus stages and redo the Mistakes list'});
+      if(phase==='p3'||phase==='p4') b.tasks.push({key:'rec|x|0|4',text:'Write one 4-mark answer in GSEB board format and compare it with Darpan or Marvel'});
+    }else if(id==='coach'){
+      b.kind='coach';b.title='Coaching';b.sub='Fixed slot';
+      b.tasks=[{key:'coach|x|0|0',text:'Stay active in class and write down every doubt'},{key:'coach|x|0|1',text:'Use free slots at coaching to finish Maths NCERT exercises'}];
+    }else if(id==='task'){
+      b.kind='free';b.title='My task';b.sub='Added in your routine';
+      b.tasks=[{key:'task|x|0|0',text:row[3]||'Task'}];
+    }else{
+      var names={lunch:['Lunch and rest','Screens off if you can'],brk:['Walk and tea','Move, drink water, keep the phone away'],din:['Dinner','Eat, then reset']},nmv=names[id];
+      b.title=(row[3])?row[3]:(nmv?nmv[0]:'Break');b.sub=nmv&&!row[3]?nmv[1]:'';
+    }
+    if(row[3]&&(id==='rev'||id==='rec'||id==='coach'||id==='mock')) b.title=row[3];
+    if(b.id!==id) b.tasks.forEach(function(t){t.key=b.id+t.key.slice(id.length);});
+    return b;
+  });
+  return {mode:mode,phase:phase,blocks:blocks,mock:mock};
+}
+
+function isDone(date,key){return !!(state.done[date]&&state.done[date][key]);}
+function dayStats(date){
+  var d=buildDay(date),done=0,total=0,mins=0;
+  d.blocks.forEach(function(b){
+    if(b.kind==='break') return;
+    var bd=b.tasks.filter(function(t){return isDone(date,t.key);}).length;
+    done+=bd;total+=b.tasks.length;
+    if(b.kind!=='coach'&&b.tasks.length) mins+=(b.e-b.s)*bd/b.tasks.length;
+  });
+  (state.custom[date]||[]).forEach(function(t){total++;if(t.done) done++;});
+  /* Prefer the measured focus timer when it exceeds the schedule-based estimate; this avoids counting the same study time twice. */
+  mins=Math.max(mins,Number(state.focusMin[date])||0);
+  return {done:done,total:total,pct:total?Math.round(done*100/total):0,hours:mins/60,plan:d};
+}
+function streak(){
+  var t=today(),n=0,d=t;
+  if(dayStats(t).pct<60) d=addDays(t,-1);
+  while(d>=state.start){
+    if(dayStats(d).pct>=60){n++;d=addDays(d,-1);}else break;
+  }
+  return n;
+}
+function subjPct(s){
+  var l=chs(s);if(!l.length) return 0;
+  var sum=0;l.forEach(function(c){sum+=st(c.id);});
+  return Math.round(sum*100/(4*l.length));
+}
+function overallPct(){
+  var l=allCh(),sum=0;l.forEach(function(c){sum+=st(c.id);});
+  return l.length?Math.round(sum*100/(4*l.length)):0;
+}
+function examList(){
+  var e=state.exams;
+  return [{k:'jee1',tag:'JEE',n:'JEE Main Session 1',d:e.jee1},{k:'board',tag:'BRD',n:'GSEB Class 12 boards start',d:e.board},{k:'gujcet',tag:'CET',n:'GUJCET',d:e.gujcet},{k:'jee2',tag:'JE2',n:'JEE Main Session 2',d:e.jee2}].filter(function(x){return x.d;});
+}
+
+/* ---------- UI state ---------- */
+var editing=false,draft=[],draftName='',editingId=null,openCh={},ac=null,lastMin=-1,fired={};
+var assetsApi=null,sampleApi=null,doubtImg=false,doubtFile=null,doubtDraft='',doubtSubj='che',doubtBusy=false,doubtLive='';
+var tab='today',cal={y:0,m:0,sel:''},synFilter='all',resetArm=false,toastT=null,installPrompt=null;
+
+/* ---------- html builders ---------- */
+function taskHTML(date,key,text,done,editable){
+  return '<label class="task'+(done?' is-done':'')+'"><input type="checkbox" data-act="tick" data-date="'+date+'" data-key="'+esc(key)+'"'+(done?' checked':'')+(editable?'':' disabled')+'><span class="box" aria-hidden="true"></span><span class="txt">'+esc(text)+'</span></label>';
+}
+function blockHTML(date,b,editable,nowId){
+  if(b.kind==='break'){
+    return '<div class="brk"><span>'+esc(b.title)+'</span><span class="time">'+t12(b.s)+' to '+t12(b.e)+'</span></div>';
+  }
+  var dn=b.tasks.filter(function(t){return isDone(date,t.key);}).length,tot=b.tasks.length;
+  var all=tot>0&&dn===tot;
+  var cls='blk k-'+b.kind+(b.subj?' s-'+b.subj:'')+(all?' is-done':'')+(nowId===b.id?' is-now':'');
+  var pill=b.subj?SUBJ[b.subj]:(b.kind==='mock'?'Mock':b.kind==='rev'?'Revision':b.kind==='rec'?'Recap':b.kind==='free'?'Task':'Coaching');
+  var h='<section class="'+cls+'"><div class="bh"><span class="time">'+t12(b.s)+' to '+t12(b.e)+'</span><span class="pill">'+pill+' · '+dn+'/'+tot+'</span></div>';
+  h+='<h3>'+esc(b.title)+'</h3>';
+  if(b.kind==='sub'&&b.ch) h+='<div class="hint">Stage '+(b.stage+1)+' of 4: '+STAGES[b.stage]+'. '+esc(b.sub)+'</div>';
+  else if(b.sub) h+='<div class="hint">'+esc(b.sub)+'</div>';
+  if(b.kind==='sub'&&editable&&date===today()){
+    var opts=chs(b.subj).filter(function(c){return st(c.id)<4||(b.ch&&c.id===b.ch.id);});
+    h+='<div class="field"><label>Chapter for today</label><select class="blksel" data-act="blkch" data-subj="'+b.subj+'" aria-label="Change chapter">'+opts.map(function(c){return '<option value="'+c.id+'"'+((b.ch&&b.ch.id===c.id)?' selected':'')+'>'+esc(c.n)+(state.hold[c.id]?' (not taught yet)':'')+'</option>';}).join('')+'</select></div>';
+  }
+  h+='<div class="tasks">'+b.tasks.map(function(t){return taskHTML(date,t.key,t.text,isDone(date,t.key),editable);}).join('')+'</div>';
+  if(b.kind==='sub'&&b.ch&&editable&&date===today()){
+    var cur=st(b.ch.id);
+    if(cur>b.stage){
+      h+='<div class="stagebar"><span class="ok">'+STAGES[b.stage]+' stage of this chapter is complete.</span>';
+      if(curChapter(b.subj,date)) h+='<button class="btn" data-act="nextstage" data-subj="'+b.subj+'">Start next stage now</button>';
+      h+='</div>';
+    }else if(all){
+      h+='<div class="stagebar"><button class="btn primary" data-act="finish" data-subj="'+b.subj+'">Mark '+esc(STAGES[b.stage])+' done for this chapter</button></div>';
+    }
+  }
+  return h+'</section>';
+}
+function customHTML(date,editable){
+  var list=state.custom[date]||[];
+  var h='<section class="card mine"><h3>My own tasks</h3>';
+  if(list.length){
+    h+='<div class="tasks">'+list.map(function(t){
+      return '<div style="display:flex;align-items:center;gap:6px">'+taskHTML(date,'c:'+t.id,t.text,t.done,editable).replace('<label class="task','<label style="flex:1" class="task')+(editable?'<button class="mini" data-act="delcustom" data-date="'+date+'" data-id="'+t.id+'" aria-label="Delete task">Delete</button>':'')+'</div>';
+    }).join('')+'</div>';
+  }else h+='<div class="muted">Nothing added for this day.</div>';
+  if(editable) h+='<form class="row" data-act="addcustom" data-date="'+date+'"><input type="text" name="t" id="ct-'+date+'" placeholder="Add a task for this day" maxlength="120" aria-label="New task"><button class="btn primary" type="submit">Add</button></form>';
+  return h+'</section>';
+}
+function daySection(date,editable,nowId){
+  var s=dayStats(date),d=s.plan,t=today();
+  var h='<section class="card sum"><div class="sumrow"><span>'+(date===t?'Today':longDate(date))+' · '+esc(modeLabel(d.mode))+'</span><b>'+s.pct+'%</b></div>';
+  h+='<div class="bar" aria-hidden="true"><i style="width:'+s.pct+'%"></i></div>';
+  h+='<div class="sumrow"><span>'+s.done+' of '+s.total+' tasks</span><span>'+s.hours.toFixed(1)+' h studied</span></div>';
+  h+='<div class="field"><label for="msel-'+date+'">Routine for this day</label><select id="msel-'+date+'" data-act="modesel" data-date="'+date+'"><option value="self"'+(d.mode==='self'?' selected':'')+'>Self-study day</option><option value="coach"'+(d.mode==='coach'?' selected':'')+'>Coaching day</option>'+state.templates.map(function(t){return '<option value="t:'+t.id+'"'+(d.mode==='t:'+t.id?' selected':'')+'>'+esc(t.name)+'</option>';}).join('')+(d.mode==='over'?'<option value="self" selected>Custom (today only)</option>':'')+'</select></div>';
+  h+='<div class="links">'+((editable&&date===t)?'<button class="btn" data-act="redit">Edit routine and timings</button>':'')+'<button class="btn" data-act="copyroute" data-date="'+date+'">Copy routine</button></div>';
+  if(!editable) h+='<div class="muted">Preview. Tasks can be ticked from this day onward.</div>';
+  h+='</section>';
+  if(editing&&editable&&date===t){h+=editorHTML();return h;}
+  h+=d.blocks.map(function(b){return blockHTML(date,b,editable,nowId);}).join('');
+  h+=customHTML(date,editable);
+  return h;
+}
+
+/* ---------- adviser ---------- */
+function phaseLine(date){
+  var p=phaseOf(date),e=state.exams,j=diffDays(e.jee1,date),b=diffDays(e.board,date);
+  if(p==='p1') return 'Phase 1, foundation: finish Learn and Exercises for the high-yield chapters. JEE Main is '+j+' days away.';
+  if(p==='p2') return 'Phase 2, JEE sprint: PYQs on finished chapters and a full mock every 3rd day. '+j+' days to JEE Main.';
+  if(p==='p3') return 'Phase 3, board revision: close every open chapter, then practise board-style answers. Boards start in '+Math.max(b,0)+' days.';
+  return 'Phase 4, board exam window: revise paper by paper, then switch to GUJCET.';
+}
+function adviceLines(date){
+  var lines=[phaseLine(date)];
+  var y=addDays(date,-1);
+  if(y>=state.start){
+    var ys=dayStats(y);
+    if(ys.total&&ys.pct<60) lines.push('Yesterday you finished '+ys.pct+'%. Close the open tasks before adding anything new today.');
+    else if(ys.pct>=80) lines.push('Yesterday was strong ('+ys.pct+'%). Keep the same pace.');
+  }
+  var open=state.mistakes.filter(function(x){return !x.fixed;}).length;
+  if(open>=5) lines.push(open+' unfixed mistakes are waiting in Progress. Clear 3 of them today.');
+  var doy=Math.floor(diffDays(date,'2026-01-01'));
+  lines.push(TIPS[((doy%TIPS.length)+TIPS.length)%TIPS.length]);
+  return lines;
+}
+function nextFocus(){
+  var d=addDays(today(),1),out=[];
+  SORDER.forEach(function(s){var c=curChapter(s,d);out.push(SUBJ[s]+': '+(c?c.n:'revision'));});
+  return out.join(' · ');
+}
+function adviserCard(){
+  var t=today(),s=dayStats(t),d=s.plan,now=new Date(),nm=now.getHours()*60+now.getMinutes();
+  var hr=now.getHours(),gr=hr<5?'Late night':hr<12?'Good morning':hr<17?'Good afternoon':hr<21?'Good evening':'Good night';
+  var act=d.blocks.filter(function(b){return b.kind!=='break'&&b.tasks.length;});
+  var cur=d.blocks.filter(function(b){return nm>=b.s&&nm<b.e;})[0]||null;
+  var head,body,nowId=null;
+  function firstOpen(b){return b.tasks.filter(function(x){return !isDone(t,x.key);})[0];}
+  if(s.total>0&&s.done===s.total){
+    head='All tasks done. Well finished.';
+    body='Tomorrow: '+nextFocus()+'.';
+  }else if(cur&&cur.kind!=='break'){
+    nowId=cur.id;
+    var ft=firstOpen(cur);
+    head='Now: '+cur.title;
+    body=(ft?'Start with: '+ft.text+'. ':'This block is done. ')+hm(cur.e-nm)+' left in this slot.';
+  }else if(cur&&cur.kind==='break'){
+    var nx=act.filter(function(b){return b.s>=cur.e;})[0];
+    head='Break: '+cur.title;
+    body=nx?('Next at '+t12(nx.s)+': '+nx.title+'.'):'Rest up.';
+  }else{
+    var up=act.filter(function(b){return b.s>nm;})[0];
+    if(up){head='Next at '+t12(up.s)+': '+up.title;body=up.tasks[0]?up.tasks[0].text+'.':'';}
+    else{
+      head='The day\'s slots are over';
+      body=(s.total-s.done)+' task'+((s.total-s.done)===1?'':'s')+' still open. Finish the shortest one before sleeping. Tomorrow: '+nextFocus()+'.';
+    }
+  }
+  var lines=adviceLines(t);
+  var circ=2*Math.PI*26,off=circ*(1-s.pct/100);
+  var ring='<div class="ring" role="img" aria-label="'+s.pct+' percent of today done"><svg viewBox="0 0 64 64"><circle class="tr" cx="32" cy="32" r="26" fill="none" stroke-width="7"></circle><circle class="pg" cx="32" cy="32" r="26" fill="none" stroke-width="7" stroke-linecap="round" stroke-dasharray="'+circ.toFixed(1)+'" stroke-dashoffset="'+off.toFixed(1)+'"></circle></svg><span>'+s.pct+'%</span></div>';
+  return {html:'<section class="card adviser"><div class="toprow"><div><div class="lbl">'+gr+' · '+t12(nm)+'</div><h2>'+esc(head)+'</h2></div>'+ring+'</div><p>'+esc(body)+'</p><div class="lines">'+lines.map(function(l){return '<div>'+esc(l)+'</div>';}).join('')+'</div></section>',nowId:nowId};
+}
+
+/* ---------- views ---------- */
+/* ---------- templates, editor, study timer ---------- */
+var BTYPES=[['rev','Morning revision'],['che','Chemistry'],['phy','Physics'],['mat','Maths'],['mock','Mock test'],['rec','Daily recap'],['coach','Coaching'],['task','Custom task'],['brk','Break or meal']];
+function tplById(id){return state.templates.filter(function(t){return t.id===id;})[0]||null;}
+function hhmm(min){min=((min%1440)+1440)%1440;return pad(Math.floor(min/60))+':'+pad(min%60);}
+function modeLabel(mode){
+  if(mode==='self') return 'self-study day';
+  if(mode==='coach') return 'coaching day';
+  if(mode==='over') return 'custom day';
+  var t=tplById(mode.slice(2));return t?t.name:'self-study day';
+}
+function draftFromDay(date){
+  return buildDay(date).blocks.map(function(b){
+    var base=b.id.split('#')[0],t=base;
+    if(base==='lunch'||base==='din'||base==='brk'||b.kind==='break') t='brk';
+    if(b.kind==='free') t='task';
+    return {t:t,s:hhmm(b.s),e:hhmm(b.e),n:(t==='brk'||t==='task')?(t==='task'?b.tasks[0].text:b.title):''};
+  });
+}
+function readDraft(){
+  var out=[];
+  Array.prototype.forEach.call(document.querySelectorAll('.erow'),function(row){
+    function f(k){var e=row.querySelector('[data-f="'+k+'"]');return e?e.value:'';}
+    out.push({t:f('t')||'che',s:f('s'),e:f('e'),n:(f('n')||'').trim()});
+  });
+  return out;
+}
+function validDraft(rows){
+  if(!rows.length){toast('Add at least one block.');return false;}
+  for(var i=0;i<rows.length;i++){
+    var r=rows[i];
+    if(!/^\d\d:\d\d$/.test(r.s)||!/^\d\d:\d\d$/.test(r.e)||toMin(r.e)<=toMin(r.s)||toMin(r.s)>=1440||toMin(r.e)>1440){toast('Check block '+(i+1)+': use valid same-day start and end times.');return false;}
+  }
+  var sorted=rows.slice().sort(function(a,b){return toMin(a.s)-toMin(b.s);});
+  for(var j=1;j<sorted.length;j++){
+    if(toMin(sorted[j].s)<toMin(sorted[j-1].e)){toast('Routine blocks overlap. Adjust their timings before saving.');return false;}
+  }
+  return true;
+}
+function editorHTML(){
+  var h='<section class="card sect"><h3 style="font-size:18px">Edit routine</h3><div class="muted">Set your own timings. Chemistry, Physics and Maths blocks pick a chapter for you, and you can change it inside the block.</div>';
+  h+=draft.map(function(r,i){
+    return '<div class="erow"><div class="two"><div class="field"><label>Start</label><input type="time" data-f="s" value="'+esc(r.s)+'"></div><div class="field"><label>End</label><input type="time" data-f="e" value="'+esc(r.e)+'"></div></div>'
+     +'<div class="two"><select data-f="t" aria-label="Block type">'+BTYPES.map(function(b){return '<option value="'+b[0]+'"'+(r.t===b[0]?' selected':'')+'>'+b[1]+'</option>';}).join('')+'</select><input type="text" data-f="n" placeholder="Title (for break or task)" maxlength="80" value="'+esc(r.n||'')+'" aria-label="Title"></div>'
+     +'<div><button class="mini" data-act="rdel" data-i="'+i+'">Delete block</button></div></div>';
+  }).join('');
+  h+='<div class="links"><button class="btn" data-act="radd">Add block</button></div>';
+  h+='<div class="field"><label for="tname">Template name (to reuse this routine)</label><input type="text" id="tname" maxlength="40" placeholder="Example: Sunday long day" value="'+esc(draftName)+'"></div>';
+  h+='<div class="links"><button class="btn primary" data-act="rtoday">Use for today only</button><button class="btn primary" data-act="rsave">'+(editingId?'Update template':'Save as template')+'</button><button class="btn" data-act="rcancel">Cancel</button></div>';
+  if(state.templates.length){
+    h+='<h3 style="font-size:16px;margin-top:6px">Your templates</h3>'+state.templates.map(function(t){
+      return '<div class="prow"><div class="ptop"><b>'+esc(t.name)+'</b><span class="pcount">'+(state.defTpl===t.id?'Default':'')+'</span></div><div class="pfiles"><button class="mini" data-act="tplday" data-id="'+t.id+'">Use today</button><button class="mini" data-act="tpledit" data-id="'+t.id+'">Edit</button><button class="mini" data-act="tpldef" data-id="'+t.id+'" aria-pressed="'+(state.defTpl===t.id)+'">Default</button><button class="mini" data-act="tpldel" data-id="'+t.id+'">Delete</button></div></div>';
+    }).join('')+'<div class="muted">A default template is used on days that have no coaching and no choice of their own.</div>';
+  }
+  return h+'</section>';
+}
+
+/* study timer */
+function fmtClock(sec){sec=Math.max(0,sec);return pad(Math.floor(sec/60))+':'+pad(sec%60);}
+function timerLeft(){
+  var T=state.timer;if(!T) return 0;
+  return T.end?Math.max(0,Math.ceil((T.end-Date.now())/1000)):(T.left||0);
+}
+function unlockAudio(){try{var C=window.AudioContext||window.webkitAudioContext;if(!C) return;ac=ac||new C();if(ac.state==='suspended') ac.resume();}catch(e){}}
+function beep(n){
+  try{
+    unlockAudio();
+    if(ac){
+      n=n||3;
+      for(var i=0;i<n;i++){
+        var o=ac.createOscillator(),g=ac.createGain(),t0=ac.currentTime+i*0.4;
+        o.type='sine';o.frequency.value=880;o.connect(g);g.connect(ac.destination);
+        g.gain.setValueAtTime(0.0001,t0);g.gain.exponentialRampToValueAtTime(0.4,t0+0.02);g.gain.exponentialRampToValueAtTime(0.0001,t0+0.3);
+        o.start(t0);o.stop(t0+0.32);
+      }
+    }
+  }catch(e){}
+  try{if(navigator.vibrate) navigator.vibrate([300,150,300]);}catch(e){}
+}
+function addFocus(sec){
+  var m=Math.round(sec/60);if(m<1) return;
+  var t=today();state.focusMin[t]=(state.focusMin[t]||0)+m;
+}
+function finishTimer(){
+  var T=state.timer;if(!T) return;
+  addFocus(T.total);state.timer=null;save();beep(4);render();toast('Time is up. Take a short break.');
+}
+function timerHTML(){
+  var T=state.timer,fm=state.focusMin[today()]||0;
+  var h='<section class="card sect timer"><div class="chtop"><h3 style="font-size:18px">Study mode</h3><span class="pcount">Focus today: '+fm+' min</span></div>';
+  if(T){
+    var left=timerLeft();
+    h+='<div class="clock" id="tclock" role="timer" aria-live="off">'+fmtClock(left)+'</div>';
+    h+='<div class="muted" style="text-align:center">'+(T.end?'Focus. Phone away.':'Paused')+(T.label?' · '+esc(T.label):'')+'</div>';
+    h+='<div class="links" style="justify-content:center">'+(T.end?'<button class="btn" data-act="tpause">Pause</button>':'<button class="btn primary" data-act="tresume">Resume</button>')+'<button class="btn warn" data-act="tstop">Stop</button></div>';
+  }else{
+    h+='<div class="muted">Pick a length. A beep and vibration tell you when time is up, while this page stays open.</div>';
+    h+='<div class="filters">'+[25,45,60,90].map(function(m){return '<button class="mini" data-act="tpreset" data-m="'+m+'">'+m+' min</button>';}).join('')+'</div>';
+    h+='<div class="two"><div class="field"><label for="tmin">Minutes</label><input type="number" id="tmin" min="1" max="600" value="45" inputmode="numeric"></div><div class="field"><label for="tuntil">Or study until</label><input type="time" id="tuntil"></div></div>';
+    h+='<div class="links"><button class="btn primary" data-act="tstart">Start</button><button class="btn" data-act="tbeep">Test beep</button></div>';
+  }
+  h+='<label class="task" style="min-height:40px"><input type="checkbox" data-act="remind"'+(state.remind?' checked':'')+'><span class="box" aria-hidden="true"></span><span class="txt">Beep when each block of today\'s routine starts (page must stay open)</span></label>';
+  return h+'</section>';
+}
+function copyRoutineText(date){
+  var d=buildDay(date);
+  return 'Routine for '+longDate(date)+'\n'+d.blocks.map(function(b){return t12(b.s)+' to '+t12(b.e)+': '+b.title;}).join('\n');
+}
+function secondTick(){
+  if(tab==='practice'&&state.quizSession&&Date.now()>=(state.quizSession.deadline||0)){var timedQ=state.quizSession.ids[state.quizSession.index];if(state.quizSession.answers[timedQ]===undefined)state.quizSession.answers[timedQ]=-1;toast('Time is up for this question.');advanceQuiz();return;}
+  var T=state.timer;
+  if(T&&T.end){
+    var left=timerLeft(),c=document.getElementById('tclock');
+    if(c) c.textContent=fmtClock(left);
+    if(left<=0) finishTimer();
+  }
+  var now=new Date(),nm=now.getHours()*60+now.getMinutes();
+  if(nm!==lastMin){
+    lastMin=nm;
+    if(state.remind){
+      var t=today(),hit=buildDay(t).blocks.filter(function(b){return b.s===nm;})[0];
+      if(hit&&!fired[t+'|'+hit.id]){fired[t+'|'+hit.id]=1;beep(2);toast('Now: '+hit.title);}
+    }
+  }
+}
+
+function viewToday(){
+  var t=today(),a=adviserCard(),st=dayStats(t),fm=state.focusMin[t]||0;
+  var h='<section class="home-heading"><div><div class="eyebrow">YOUR PERSONAL STUDY SPACE</div><h1>Today&#39;s overview</h1><p>'+esc(longDate(t))+' · Build momentum, one session at a time.</p></div><button class="home-focus-link" data-act="tab" data-t="focus">Start focus <span>↗</span></button></section>';
+  h+='<section class="home-metrics"><div><span>TASKS COMPLETED</span><b>'+st.done+'<small> / '+st.total+'</small></b><i class="home-metric-line violet"></i></div><div><span>FOCUS TIME</span><b>'+Math.floor(fm/60)+'<small>h</small> '+(fm%60)+'<small>m</small></b><i class="home-metric-line teal"></i></div><div><span>SYLLABUS DONE</span><b>'+overallPct()+'<small>%</small></b><i class="home-metric-line lime"></i></div><div><span>STUDY STREAK</span><b>'+streak()+'<small> days</small></b><i class="home-metric-line blue"></i></div></section>';
+  h+=a.html;
+  h+='<section class="schedule-heading"><div><div class="eyebrow">YOUR PLAN</div><h2>Today&#39;s study schedule</h2></div><button class="mini" data-act="tab" data-t="calendar">Open calendar →</button></section>';
+  h+=daySection(t,true,a.nowId);
+  return h;
+}
+function examsOn(ds){return examList().filter(function(x){return x.d===ds;});}
+function viewCalendar(){
+  var t=today(),first=new Date(cal.y,cal.m,1),lead=(first.getDay()+6)%7,dim=new Date(cal.y,cal.m+1,0).getDate(),i,cells='';
+  for(i=0;i<lead;i++) cells+='<div class="cd empty" aria-hidden="true"></div>';
+  for(i=1;i<=dim;i++){
+    var ds=cal.y+'-'+pad(cal.m+1)+'-'+pad(i),p=0;
+    if(ds<=t&&ds>=state.start) p=dayStats(ds).pct;
+    var ex=examsOn(ds).map(function(x){return '<span class="ex">'+x.tag+'</span>';}).join('');
+    cells+='<button class="cd'+(ds===t?' is-today':'')+(ds===cal.sel?' is-sel':'')+'" data-act="calsel" data-date="'+ds+'" style="--p:'+Math.round(p*0.6)+'%" aria-label="'+esc(longDate(ds))+(p?', '+p+' percent done':'')+'"><span class="n">'+i+'</span>'+ex+'</button>';
+  }
+  var h='<section class="card sect"><div class="cal-head"><button class="mini" data-act="calprev" aria-label="Previous month">Prev</button><h2>'+MON[cal.m]+' '+cal.y+'</h2><button class="mini" data-act="calnext" aria-label="Next month">Next</button></div>';
+  h+='<div class="dow">'+['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(function(d){return '<span>'+d+'</span>';}).join('')+'</div><div class="grid">'+cells+'</div>';
+  h+='<div class="legend">'+examList().map(function(x){return '<div><b>'+x.tag+'</b> '+esc(x.n)+': '+esc(longDate(x.d))+' '+x.d.slice(0,4)+'</div>';}).join('')+'<div>Darker green means more of that day\'s tasks done. Exam dates are tentative; edit them in Settings.</div></div>';
+  h+='<div><button class="mini" data-act="caltoday">Go to today</button></div></section>';
+  var sel=cal.sel||t;
+  h+='<h2 style="font-size:18px;margin-top:4px">'+esc(longDate(sel))+'</h2>';
+  h+=daySection(sel,sel<=t,null);
+  return h;
+}
+function viewSyllabus(){
+  var h='<section class="sect"><h2>Syllabus</h2><div class="muted">One line per chapter. Tap a chapter to mark stages done, set it as your focus, or hold it if coaching has not reached it yet. Held chapters stay out of Today until you release them.</div></section>';
+  h+='<div class="filters">'+[['all','All'],['che','Chemistry'],['phy','Physics'],['mat','Maths']].map(function(f){return '<button class="mini" data-act="filter" data-f="'+f[0]+'" aria-pressed="'+(synFilter===f[0])+'">'+f[1]+'</button>';}).join('')+'</div>';
+  SORDER.forEach(function(s){
+    if(synFilter!=='all'&&synFilter!==s) return;
+    var cur=curChapter(s,today()),list=chs(s),pc=subjPct(s);
+    h+='<section class="card subj-card" style="--c:var(--'+s+');--g:var(--g-'+s+')"><div class="row"><b>'+SUBJ[s]+'</b><span class="muted">'+pc+'% done</span></div><div class="bar" aria-hidden="true"><i style="width:'+pc+'%"></i></div></section>';
+    h+='<div class="chlist">';
+    list.forEach(function(c,ix){
+      var g=st(c.id),isCur=cur&&cur.id===c.id,held=!!state.hold[c.id],dots='';
+      for(var k=0;k<4;k++) dots+='<i class="dt'+(g>k?' on':'')+'"></i>';
+      h+='<details class="chline'+(isCur?' is-focus':'')+(held?' is-held':'')+'" data-ch="'+c.id+'"'+(openCh[c.id]?' open':'')+' style="--c:var(--'+s+');--g:var(--g-'+s+')"><summary><span class="no">'+(ix+1)+'</span><span class="cn">'+esc(c.n)+(c.hy?'<span class="hy">HY</span>':'')+'</span><span class="cs">'+(held?'Not taught yet':isCur?'Now':'')+'</span><span class="cp" role="img" aria-label="'+g+' of 4 stages done">'+dots+'</span></summary><div class="cbody"><div class="hint">'+esc(c.note)+'</div><div class="pips">'+STAGES.map(function(n,i){return '<button class="pip" data-act="stage" data-id="'+c.id+'" data-i="'+i+'" aria-pressed="'+(g>i)+'">'+esc(n)+'</button>';}).join('')+'</div><div class="links"><button class="mini" data-act="focus" data-id="'+c.id+'" aria-pressed="'+(!!isCur)+'">'+(isCur?'Studying now':'Study next')+'</button><button class="mini" data-act="hold" data-id="'+c.id+'" aria-pressed="'+held+'">'+(held?'Held: release':'Hold: not taught yet')+'</button>'+(c.custom?'<button class="mini" data-act="delch" data-id="'+c.id+'">Remove chapter</button>':'')+'</div></div></details>';
+    });
+    h+='</div><form class="row" data-act="addch" data-s="'+s+'"><input type="text" name="n" placeholder="Add a '+SUBJ[s]+' chapter" maxlength="80" aria-label="New '+SUBJ[s]+' chapter"><button class="btn" type="submit">Add</button></form>';
+  });
+  return h;
+}
+
+function viewFocus(){
+ var T=state.timer,mins=state.hubPreset||25,subject=state.focusSubject||'Physics',fm=state.focusMin[today()]||0;
+ var h='<section class="focus-head"><div><div class="eyebrow">STAY IN THE ZONE</div><h1>Focus session</h1><p>One session at a time. Make the next 25 minutes count.</p></div><div class="focus-today"><span>FOCUSED TODAY</span><b>'+Math.floor(fm/60)+'h '+(fm%60)+'m</b></div></section>';
+ h+='<section class="focus-workspace"><div class="focus-controls"><div class="field"><label for="focusSubject">STUDYING</label><select id="focusSubject" data-act="focusSubject"><option'+(subject==='Physics'?' selected':'')+'>Physics</option><option'+(subject==='Chemistry'?' selected':'')+'>Chemistry</option><option'+(subject==='Maths'?' selected':'')+'>Maths</option></select></div><div class="focus-presets"><span class="eyebrow">SESSION LENGTH</span><div class="preset-row">'+[25,45,60,90].map(function(m){return '<button class="preset'+(mins===m?' active':'')+'" data-act="focusPreset" data-m="'+m+'">'+m+'<small>min</small></button>';}).join('')+'</div></div>';
+ if(!T) h+='<div class="focus-custom"><label for="tmin">Custom minutes</label><input type="number" id="tmin" min="1" max="600" value="'+mins+'" inputmode="numeric"></div>';
+ h+='<label class="focus-remind"><input type="checkbox" data-act="remind"'+(state.remind?' checked':'')+'><span>Notify me when a study block begins</span></label></div>';
+ h+='<div class="focus-clock-panel"><div class="clock-caption">'+(T?(T.end?'SESSION IN PROGRESS':'SESSION PAUSED'):'READY WHEN YOU ARE')+'</div><div class="timer-orbit"><svg viewBox="0 0 240 240" aria-hidden="true"><circle class="orbit-track" cx="120" cy="120" r="104"></circle><circle class="orbit-progress" cx="120" cy="120" r="104"></circle></svg><div class="orbit-time" id="tclock">'+(T?fmtClock(timerLeft()):String(mins).padStart(2,'0')+':00')+'</div><div class="orbit-label">'+(T?esc(T.label||'Focus session'):esc(subject+' · Deep work'))+'</div></div>';
+ if(T) h+='<div class="focus-actions">'+(T.end?'<button class="focus-primary" data-act="tpause">Pause session</button>':'<button class="focus-primary" data-act="tresume">Resume session</button>')+'<button class="focus-stop" data-act="tstop">End session</button></div>';
+ else h+='<div class="focus-actions"><button class="focus-primary" data-act="focusStart">Start studying <span>→</span></button><button class="focus-stop" data-act="tbeep" aria-label="Test sound">Test sound</button></div>';
+ h+='<div class="focus-footnote">Keep this screen open while the timer runs. Your completed focus minutes are added to Stats.</div></div></section>';
+ h+='<section class="focus-bottom"><div class="focus-tip"><span class="tip-symbol">✦</span><div><b>Make this session count</b><p>Choose one chapter, silence distractions and work until the timer ends.</p></div></div><div class="focus-mini-stats"><div><span>DAILY TARGET</span><b>4 hours</b><small>Recommended study goal</small></div><div><span>COMPLETED TODAY</span><b>'+Math.floor(fm/60)+'h '+(fm%60)+'m</b><small>Tracked focus time</small></div></div></section>';
+ return h;
+}
+
+var FORMULAS=[
+['Physics','Electrostatics','Coulomb law','F = k |q₁q₂| / r²'],['Physics','Electrostatics','Electric field','E = F/q = kQ/r²'],['Physics','Capacitance','Capacitance','C = Q/V'],['Physics','Current Electricity','Ohm law','V = IR'],['Physics','Current Electricity','Drift current','I = neAvd'],['Physics','Magnetism','Magnetic force','F = qvB sinθ'],['Physics','EMI','Faraday law','ε = −dΦB/dt'],['Physics','AC','RMS voltage','Vrms = V₀/√2'],['Physics','Ray Optics','Lens formula','1/f = 1/v − 1/u'],['Physics','Dual Nature','Photon energy','E = hν = hc/λ'],['Physics','Atoms','Bohr energy','En = −13.6 Z²/n² eV'],
+['Chemistry','Solutions','Molarity','M = moles of solute / volume of solution (L)'],['Chemistry','Solutions','Raoult law','pA = xA pA°'],['Chemistry','Electrochemistry','Nernst equation','E = E° − (0.0591/n) log Q (at 298 K)'],['Chemistry','Electrochemistry','Gibbs energy','ΔG° = −nFE°cell'],['Chemistry','Kinetics','First order rate','k = (2.303/t) log(a/(a−x))'],['Chemistry','Kinetics','Half life (first order)','t½ = 0.693/k'],['Chemistry','Coordination','Magnetic moment','μ = √(n(n+2)) BM'],['Chemistry','Organic','Degree of unsaturation','DBE = (2C + 2 + N − H − X)/2'],['Chemistry','Organic reactions','Aldol condensation','2 CH₃CHO  →  CH₃CH(OH)CH₂CHO  →  CH₃CH=CHCHO + H₂O (dil. base, heat)'],['Chemistry','Organic reactions','Cannizzaro reaction','2 HCHO + NaOH → HCOONa + CH₃OH (aldehyde without α-H)'],['Chemistry','Organic reactions','Haloform reaction','RCOCH₃ + 3I₂ + 4NaOH → RCOONa + CHI₃ + 3NaI + 3H₂O'],['Chemistry','Organic reactions','Hoffmann bromamide','RCONH₂ + Br₂ + 4NaOH → RNH₂ + Na₂CO₃ + 2NaBr + 2H₂O'],['Chemistry','Organic reactions','Williamson ether synthesis','RONa + R′X → ROR′ + NaX'],['Chemistry','Organic reactions','Reimer–Tiemann','Phenol + CHCl₃ + NaOH → o-hydroxybenzaldehyde (after work-up)'],
+['Maths','Matrices','Inverse matrix','A⁻¹ = adj(A)/|A|, when |A| ≠ 0'],['Maths','Determinants','2×2 determinant','|a b; c d| = ad − bc'],['Maths','Differentiation','Power rule','d(xⁿ)/dx = nxⁿ⁻¹'],['Maths','Differentiation','Product rule','(uv)′ = u′v + uv′'],['Maths','Differentiation','Chain rule','dy/dx = (dy/du)(du/dx)'],['Maths','Integration','Power rule','∫xⁿ dx = xⁿ⁺¹/(n+1) + C, n ≠ −1'],['Maths','Integration','By parts','∫u dv = uv − ∫v du'],['Maths','Differential Equations','Variable separable','dy/g(y) = f(x) dx'],['Maths','Vectors','Dot product','a·b = |a||b|cosθ'],['Maths','Vectors','Cross product','|a×b| = |a||b|sinθ'],['Maths','Probability','Conditional probability','P(A|B) = P(A∩B)/P(B)']
+];
+function dueRevisions(){return state.revision.filter(function(r){return !r.done&&r.due<=today();}).sort(function(a,b){return a.due.localeCompare(b.due);});}
+function getBacklog(){var out=[],d=addDays(today(),-14),end=today();while(d<end){if(d>=state.start){var plan=buildDay(d);plan.blocks.forEach(function(b){b.tasks.forEach(function(t){if(!isDone(d,t.key)&&b.kind!=='coach'&&out.length<80)out.push({date:d,text:b.title+': '+t.text,subj:b.subj||'phy'});});});(state.custom[d]||[]).forEach(function(t){if(!t.done&&out.length<80)out.push({date:d,text:t.text,subj:'phy'});});}d=addDays(d,1);}return out;}
+function smartPlan(hours){var mins=hours*60,items=[],used=0,rev=dueRevisions(),back=getBacklog(),open=[];rev.slice(0,3).forEach(function(r){var c=chById(r.ch);if(c&&used+20<=mins){items.push({type:'Revision',text:c.n+' · '+r.label+' revision',min:20,subj:c.s});used+=20;}});back.slice(0,3).forEach(function(b){if(used+25<=mins){items.push({type:'Backlog',text:b.text,min:25,subj:b.subj});used+=25;}});SORDER.forEach(function(s){var c=curChapter(s,today());if(c&&used+Math.min(75,mins-used)>=mins*.85)return;if(c)open.push({s:s,c:c,g:st(c.id)});});open.forEach(function(x){if(used+45<=mins){items.push({type:'New learning',text:SUBJ[x.s]+': '+x.c.n+' — '+STAGES[x.g],min:45,subj:x.s});used+=45;}});if(used+20<=mins){items.push({type:'Practice',text:'Mixed MCQs + review mistakes',min:20,subj:'mat'});used+=20;}if(!items.length)items.push({type:'Rest / review',text:'Review your weakest topic and plan tomorrow',min:20,subj:'phy'});return {items:items,used:used,free:Math.max(0,mins-used)};}
+function hubTaskHTML(items){return items.map(function(x,i){return '<div class="prow"><div><b>'+esc(x.type)+'</b><div>'+esc(x.text)+'</div><span class="pcount">'+x.min+' min</span></div><button class="mini" data-act="planadd" data-i="'+i+'">Add to today</button></div>';}).join('');}
+function viewHub(){
+ var hours=state.plannerHours||4,plan=smartPlan(hours),due=dueRevisions(),back=getBacklog(),tests=state.mockTests,avg=tests.length?Math.round(tests.reduce(function(a,x){return a+x.accuracy;},0)/tests.length):0;
+ var h='<section class="sect"><h2>Smart Study Hub</h2><div class="muted">A practical study command centre: plan, revise, recover backlog, analyse tests and track focus.</div></section>';
+ h+='<div class="hubgrid"><div class="hubstat"><b>'+due.length+'</b><span>Revisions due</span></div><div class="hubstat"><b>'+back.length+'</b><span>Backlog tasks · last 14 days</span></div><div class="hubstat"><b>'+tests.length+'</b><span>Mock tests logged</span></div><div class="hubstat"><b>'+avg+'%</b><span>Average test accuracy</span></div></div>';
+ h+='<section class="card sect"><h3 style="font-size:18px">1. Smart daily planner</h3><div class="muted">Set available study time. The planner prioritises due revision, overdue tasks and your next chapter stage. It works offline using your saved progress (no paid AI API needed).</div><div class="field"><label for="planhours">Available study hours today</label><input type="number" id="planhours" data-act="planhours" min="1" max="14" step="0.5" value="'+hours+'"></div><div class="hubgrid"><div class="hubstat"><b>'+Math.floor(plan.used/60)+'h '+(plan.used%60)+'m</b><span>Suggested study time</span></div><div class="hubstat"><b>'+Math.floor(plan.free/60)+'h '+(plan.free%60)+'m</b><span>Flexible time remaining</span></div></div>'+hubTaskHTML(plan.items)+'<button class="btn primary" data-act="planall">Add full plan to Today</button></section>';
+ h+='<section class="card sect"><h3 style="font-size:18px">2. Smart revision system</h3><div class="muted">When you finish all four stages of a chapter, revision reminders are scheduled for 1, 3, 7 and 15 days later.</div>';
+ if(due.length) h+=due.map(function(r){var c=chById(r.ch);return '<div class="prow"><div><b>'+esc(c?c.n:'Chapter')+'</b><div class="muted">'+esc(r.label)+' · Due '+esc(r.due)+'</div></div><button class="mini" data-act="revdone" data-id="'+r.id+'">Mark revised</button></div>';}).join('');else h+='<div class="muted">No revision due today. Complete a chapter to start its revision cycle.</div>';
+ h+='</section>';
+ h+='<section class="card sect"><h3 style="font-size:18px">3. Backlog recovery</h3><div class="muted">Finds unchecked study tasks from the previous 14 days. Pick up to three are included in the smart plan above.</div>'+(back.length?back.slice(0,8).map(function(b){return '<div class="prow"><div><b>'+esc(b.date)+'</b><div>'+esc(b.text)+'</div></div></div>';}).join(''):'<div class="muted">No missed tasks detected in the last 14 days.</div>')+'</section>';
+ h+='<section class="card sect"><h3 style="font-size:18px">4. Mock test analytics</h3><div class="muted">Record your own test result. Accuracy is calculated from correct and incorrect attempts; score percentage uses marks obtained / total marks.</div><form class="sect" data-act="mockadd"><div class="two"><div class="field"><label>Test name</label><input name="name" required maxlength="60" placeholder="e.g. JEE mock 1"></div><div class="field"><label>Subject</label><select name="subject"><option value="all">Full PCM</option><option value="phy">Physics</option><option value="che">Chemistry</option><option value="mat">Mathematics</option></select></div></div><div class="field"><label>Date</label><input name="date" type="date" value="'+today()+'" required></div><div class="two"><div class="field"><label>Marks obtained</label><input name="score" type="number" step="0.01" required min="0"></div><div class="field"><label>Total marks</label><input name="total" type="number" step="0.01" required min="1"></div></div><div class="two"><div class="field"><label>Correct</label><input name="correct" type="number" min="0" value="0" required></div><div class="field"><label>Incorrect</label><input name="wrong" type="number" min="0" value="0" required></div></div><button class="btn primary" type="submit">Save test result</button></form>';
+ if(tests.length) h+='<div class="hubgrid"><div class="hubstat"><b>'+Math.round(tests.reduce(function(a,x){return a+x.score/x.total*100;},0)/tests.length)+'%</b><span>Average marks percentage</span></div><div class="hubstat"><b>'+Math.max.apply(null,tests.map(function(x){return Math.round(x.score/x.total*100);} ))+'%</b><span>Best marks percentage</span></div></div>'+tests.slice().reverse().slice(0,10).map(function(x){return '<div class="prow"><div><b>'+esc(x.name)+'</b><div class="muted">'+esc(x.date)+' · '+x.score+'/'+x.total+' marks · '+x.accuracy+'% accuracy</div></div><button class="mini" data-act="mockdel" data-id="'+x.id+'">Delete</button></div>';}).join('');
+ h+='</section>';
+ h+='<section class="card sect"><h3 style="font-size:18px">5. Formula & reaction library</h3><div class="field"><label for="formsearch">Search formula, topic or subject</label><input id="formsearch" type="text" placeholder="Search e.g. Nernst, lens, integration" oninput="window.__paFormulaSearch(this.value)"></div><div id="formulalist">'+formulaHTML('')+'</div></section>';
+ h+='<section class="card sect"><h3 style="font-size:18px">6. Focus mode</h3><div class="focus-hero"><div class="muted">Pomodoro-style focus timer</div><div class="clock" id="hubclock">'+(state.timer?fmtClock(timerLeft()):'25:00')+'</div><div class="muted">'+(state.timer?(state.timer.label||'Focus session running'):'Choose a session length and start')+'</div><div class="filters" style="justify-content:center">'+[25,45,60].map(function(m){return '<button class="mini" data-act="hubpreset" data-m="'+m+'">'+m+' min</button>';}).join('')+'</div><div class="links" style="justify-content:center">'+(state.timer?'<button class="btn" data-act="tpause">Pause</button><button class="btn warn" data-act="tstop">Stop</button>':'<button class="btn primary" data-act="hubfocus">Start focus session</button>')+'</div></div><div class="muted">Timer runs while this page stays open. Focus minutes are counted in Progress.</div></section>';
+ h+='<section class="card sect"><h3 style="font-size:18px">7. Advanced progress report</h3><div class="hubgrid"><div class="hubstat"><b>'+overallPct()+'%</b><span>Syllabus completed</span></div><div class="hubstat"><b>'+streak()+'</b><span>Current streak</span></div><div class="hubstat"><b>'+Math.round((state.focusMin[today()]||0)/60*10)/10+'h</b><span>Focus time today</span></div><div class="hubstat"><b>'+state.mistakes.filter(function(x){return !x.fixed;}).length+'</b><span>Unresolved mistakes</span></div></div><div class="muted">For a full day-by-day chart and subject progress, open the Progress icon at the top.</div></section>';
+ h+='<section class="card sect"><h3 style="font-size:18px">8. Install & backup</h3><div class="muted">The app works offline as a local HTML file. If hosted on HTTPS, it can be installed as a PWA. Backup downloads your progress as a JSON file; you can upload that file to your own Drive for cloud storage.</div><div class="links"><button class="btn primary" data-act="installapp" id="installbtn">Install app</button><button class="btn" data-act="backupfile">Download backup</button><label class="btn attach">Restore backup<input type="file" accept="application/json,.json" data-act="restorefile"></label></div><div class="pwa-note" id="installnote">Install availability depends on browser and hosting. Automatic cloud sync needs a separately configured backend; this version provides private manual backup.</div></section>';
+ return h;
+}
+function formulaHTML(q){q=(q||'').toLowerCase();var list=FORMULAS.filter(function(f){return !q||f.join(' ').toLowerCase().indexOf(q)>=0;});return list.length?list.map(function(f){return '<div class="formula"><div class="muted">'+esc(f[0])+' · '+esc(f[1])+'</div><b>'+esc(f[2])+'</b><code>'+esc(f[3])+'</code></div>';}).join(''):'<div class="muted">No matching formula found.</div>';}
+
+function chart14(){
+  var t=today(),W=350,H=126,x0=30,step=22,bw=14,base=100,sc=80,i,bars='',labs='';
+  for(i=13;i>=0;i--){
+    var d=addDays(t,-i),p=(d>=state.start)?dayStats(d).pct:0,k=13-i,x=x0+k*step,h=Math.round(p*sc/100);
+    bars+='<rect class="b" x="'+x+'" y="'+(base-h)+'" width="'+bw+'" height="'+Math.max(h,1)+'" rx="2"></rect>';
+    if(p>0) bars+='<text x="'+(x+bw/2)+'" y="'+(base-h-3)+'" text-anchor="middle">'+p+'</text>';
+    labs+='<text x="'+(x+bw/2)+'" y="'+(base+12)+'" text-anchor="middle">'+parse(d).getDate()+'</text>';
+  }
+  var ty=base-Math.round(60*sc/100);
+  return '<svg class="chart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Task completion percent for the last 14 days"><line x1="'+x0+'" x2="'+(W-4)+'" y1="'+base+'" y2="'+base+'" stroke="currentColor" opacity=".25"></line><line class="t" x1="'+x0+'" x2="'+(W-4)+'" y1="'+ty+'" y2="'+ty+'"></line><text x="2" y="'+(ty+3)+'">60%</text><text x="2" y="'+(base+3)+'">0%</text>'+bars+labs+'</svg>';
+}
+function viewProgress(){
+ var t=today(),tot=0,d=state.start;while(d<=t){tot+=dayStats(d).hours;d=addDays(d,1);}
+ var fm=state.focusMin[t]||0,weekly=0,bars='',labels='';
+ for(var i=6;i>=0;i--){var ds=addDays(t,-i),v=state.focusMin[ds]||0;weekly+=v;var ht=Math.max(5,Math.round(v/240*108));bars+='<div class="week-col"><div class="week-value">'+(v?Math.round(v/60*10)/10+'h':'')+'</div><div class="week-bar-wrap"><i style="height:'+Math.min(100,ht)+'%"></i></div><span>'+['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][parse(ds).getDay()]+'</span></div>';}
+ var tests=state.mockTests||[],avg=tests.length?Math.round(tests.reduce(function(a,x){return a+x.accuracy;},0)/tests.length):0;
+ var h='<section class="stats-head"><div><div class="eyebrow">YOUR CONSISTENCY, AT A GLANCE</div><h1>Study statistics</h1><p>Small steps, measured over time.</p></div><div class="stats-period"><span>TRACKING SINCE</span><b>'+esc(state.start)+'</b></div></section>';
+ h+='<section class="stats-kpis"><div class="stat-kpi"><span>SYLLABUS COMPLETE</span><b>'+overallPct()+'<small>%</small></b><i class="kpi-line violet"></i></div><div class="stat-kpi"><span>CURRENT STREAK</span><b>'+streak()+'<small> days</small></b><i class="kpi-line lime"></i></div><div class="stat-kpi"><span>FOCUS TODAY</span><b>'+Math.floor(fm/60)+'<small>h</small> '+(fm%60)+'<small>m</small></b><i class="kpi-line teal"></i></div><div class="stat-kpi"><span>TOTAL STUDY TIME</span><b>'+tot.toFixed(1)+'<small>h</small></b><i class="kpi-line blue"></i></div></section>';
+ h+='<section class="stats-grid"><div class="stats-panel week-panel"><div class="panel-heading"><div><h2>Focus activity</h2><p>Time tracked over the last 7 days</p></div><div class="panel-total">'+Math.round(weekly/60*10)/10+'h <small>THIS WEEK</small></div></div><div class="week-chart">'+bars+'</div></div>';
+ h+='<div class="stats-panel streak-panel"><div class="panel-heading"><div><h2>Consistency</h2><p>Your current learning streak</p></div><span class="flame">✦</span></div><div class="streak-number">'+streak()+' <small>days</small></div><div class="streak-note">Keep a steady rhythm. Progress is built session by session.</div><div class="streak-dots">'+['M','T','W','T','F','S','S'].map(function(x){return '<span>'+x+'</span>';}).join('')+'</div></div></section>';
+ h+='<section class="stats-panel subject-panel"><div class="panel-heading"><div><h2>Subject progress</h2><p>Completion across your Class 12 syllabus</p></div></div><div class="subject-progress-list">'+SORDER.map(function(s){var pc=subjPct(s);return '<div class="subject-progress"><div class="subject-meta"><b>'+SUBJ[s]+'</b><span>'+pc+'%</span></div><div class="subject-track"><i class="'+s+'" style="width:'+pc+'%"></i></div></div>';}).join('')+'</div></section>';
+ h+='<section class="stats-panel mistakes-panel"><div class="panel-heading"><div><h2>Mock test performance</h2><p>Based on the tests you have recorded</p></div><div class="panel-total">'+avg+'% <small>AVG. ACCURACY</small></div></div><div class="mock-summary"><b>'+tests.length+'</b><span>Tests recorded</span><button class="btn" data-act="tab" data-t="hub">Open analytics →</button></div></section>';
+ var ms=state.mistakes.slice().sort(function(a,b){return (a.fixed?1:0)-(b.fixed?1:0);});
+ h+='<section class="stats-panel mistakes-panel"><div class="panel-heading"><div><h2>Mistakes notebook</h2><p>Capture errors and revisit them deliberately</p></div><span class="unresolved">'+ms.filter(function(x){return !x.fixed;}).length+' open</span></div>';
+ h+='<form class="mistake-entry" data-act="addmist"><select name="s" aria-label="Subject">'+SORDER.map(function(s){return '<option value="'+s+'">'+SUBJ[s]+'</option>';}).join('')+'</select><input type="text" name="t" placeholder="What did you get wrong?" maxlength="140" aria-label="Mistake"><button class="focus-primary" type="submit">Add mistake</button></form>';
+ if(ms.length) h+=ms.slice(0,8).map(function(x){return '<div class="mist"><label class="task" style="min-height:32px;padding:0"><input type="checkbox" data-act="mistfix" data-id="'+x.id+'"'+(x.fixed?' checked':'')+'><span class="box" aria-hidden="true"></span><span class="txt"><b>'+SUBJ[x.s]+'</b> · '+esc(x.t)+'</span></label><button class="mini" data-act="mistdel" data-id="'+x.id+'">Delete</button></div>';}).join('');else h+='<p class="empty-note">No mistakes logged yet. Add one after your next practice session.</p>';
+ return h+'</section>';
+}
+
+/* ---------- exam practice, readiness and study alerts ---------- */
+function weakTopics(){
+ var out=[];
+ SORDER.forEach(function(sub){
+  var open=state.mistakes.filter(function(m){return m.s===sub&&!m.fixed;}).length;
+  var tests=state.mockTests.filter(function(t){return t.s===sub;});
+  var qs=state.practiceLogs.filter(function(t){return t.subjectStats&&t.subjectStats[sub];});
+  var qTotal=qs.reduce(function(a,x){return a+x.subjectStats[sub].total;},0),qCorrect=qs.reduce(function(a,x){return a+x.subjectStats[sub].correct;},0);
+  var acc=qTotal?Math.round(qCorrect/qTotal*100):null;
+  var testAcc=tests.length?Math.round(tests.reduce(function(a,x){return a+x.accuracy;},0)/tests.length):null;
+  var score=(open*12)+(acc===null?0:Math.max(0,70-acc)*.35)+(testAcc===null?0:Math.max(0,70-testAcc)*.25);
+  out.push({s:sub,open:open,accuracy:acc,testAccuracy:testAcc,score:score});
+ });
+ return out.sort(function(a,b){return b.score-a.score;});
+}
+function readiness(){
+ var syl=overallPct(),tests=state.mockTests,practice=state.practiceLogs;
+ var mock=tests.length?tests.reduce(function(a,x){return a+x.accuracy;},0)/tests.length:0;
+ var prac=practice.length?practice.reduce(function(a,x){return a+x.accuracy;},0)/practice.length:0;
+ var due=state.revision.filter(function(r){return !r.done;}).length,done=state.revision.filter(function(r){return r.done;}).length,total=due+done;
+ var rev=total?done/total*100:0;
+ var score=Math.round(syl*.35+mock*.35+prac*.2+rev*.1);
+ var evidence=(tests.length>0?1:0)+(practice.length>0?1:0)+(total>0?1:0);
+ return {score:score,syl:syl,mock:Math.round(mock),prac:Math.round(prac),rev:Math.round(rev),evidence:evidence,tests:tests.length,practice:practice.length};
+}
+function advanceQuiz(){
+ var ss=state.quizSession;if(!ss)return;
+ if(ss.index+1<ss.ids.length){ss.index++;ss.deadline=Date.now()+60000;save();render();return;}
+ var correct=0,subj='all',topicCounts={},subjectStats={};ss.ids.forEach(function(qid){var q=state.practiceQuestions.filter(function(z){return z.id===qid;})[0];if(!q)return;var ok=ss.answers[qid]===q.answer;if(ok)correct++;else topicCounts[q.topic]=(topicCounts[q.topic]||0)+1;if(!subjectStats[q.s])subjectStats[q.s]={correct:0,total:0};subjectStats[q.s].total++;if(ok)subjectStats[q.s].correct++;});
+ var total=ss.ids.length,keys=Object.keys(subjectStats);if(keys.length===1)subj=keys[0];var log={id:uid(),date:today(),s:subj,subjectStats:subjectStats,total:total,correct:correct,wrong:total-correct,accuracy:Math.round(correct/total*100),duration:Math.round((Date.now()-ss.started)/1000),weakTopics:topicCounts};state.practiceLogs.push(log);state.quizSession=null;save();render();toast('Practice complete: '+correct+'/'+total+' correct.');
+}
+function viewPractice(){
+ var qs=state.practiceQuestions||[],logs=state.practiceLogs||[],sess=state.quizSession;
+ var h='<section class="stats-head"><div><div class="eyebrow">PRACTICE WITH PURPOSE</div><h1>Exam simulator</h1><p>Build a personal MCQ bank, run timed practice and review every answer.</p></div><div class="stats-period"><span>QUESTION BANK</span><b>'+qs.length+' questions</b></div></section>';
+ h+='<div class="stats-kpis"><div class="stat-kpi"><span>QUESTIONS SAVED</span><b>'+qs.length+'</b><i class="kpi-line violet"></i></div><div class="stat-kpi"><span>PRACTICE SETS</span><b>'+logs.length+'</b><i class="kpi-line teal"></i></div><div class="stat-kpi"><span>AVERAGE ACCURACY</span><b>'+(logs.length?Math.round(logs.reduce(function(a,x){return a+x.accuracy;},0)/logs.length):0)+'<small>%</small></b><i class="kpi-line blue"></i></div><div class="stat-kpi"><span>NEEDS REVIEW</span><b>'+qs.filter(function(q){return q.needsReview;}).length+'</b><i class="kpi-line lime"></i></div></div>';
+ if(sess){var q=qs.filter(function(x){return x.id===sess.ids[sess.index];})[0];
+  if(!q){state.quizSession=null;save();return viewPractice();}
+  var selected=sess.answers[q.id],answered=selected!==undefined,correct=selected===q.answer;
+  h+='<section class="stats-panel sect"><div class="panel-heading"><div><h2>Practice session</h2><p>Question '+(sess.index+1)+' of '+sess.ids.length+' · '+SUBJ[q.s]+' · '+Math.max(0,Math.ceil(((sess.deadline||Date.now()+60000)-Date.now())/1000))+' sec left</p></div><span class="unresolved">'+(answered?'Answered':'In progress')+'</span></div><div class="subject-track" style="margin:15px 0"><i style="width:'+((sess.index+1)/sess.ids.length*100)+'%"></i></div><h3 style="font-size:19px;line-height:1.5;margin:20px 0">'+esc(q.q)+'</h3>';
+  h+=q.opts.map(function(op,j){var cls=answered?(j===q.answer?'active':(j===selected?'wrong':'')):(j===selected?'active':'');return '<button class="prow" style="width:100%;text-align:left;margin:8px 0;border:1px solid #344054;border-radius:12px;background:'+(cls==='active'?'#292b50':cls==='wrong'?'#39232c':'#171e2b')+';color:#e7edf7;padding:14px" data-act="quizpick" data-i="'+j+'" '+(answered?'disabled':'')+'><b style="margin-right:10px">'+String.fromCharCode(65+j)+'.</b>'+esc(op)+'</button>';}).join('');
+  if(answered)h+='<div class="hint" style="margin-top:15px;color:'+(correct?'#9edc9e':'#ff9da5')+'"><b>'+(correct?'Correct':'Not quite')+'</b> · '+esc(q.explain||'No explanation was added.')+'</div>';
+  h+='<div class="links" style="margin-top:18px">'+(answered?'<button class="btn primary" data-act="quiznext">'+(sess.index+1===sess.ids.length?'Finish test':'Next question')+'</button>':'<span class="muted">Select an answer to continue.</span>')+'<button class="btn" data-act="quizquit">End session</button></div></section>';
+ }else{
+  h+='<section class="stats-panel sect"><div class="panel-heading"><div><h2>Start a practice test</h2><p>Choose a subject and question count. Each question has a 60-second limit.</p></div></div><div class="two"><div class="field"><label for="quizsub">Subject</label><select id="quizsub"><option value="all">All subjects</option>'+SORDER.map(function(x){return '<option value="'+x+'">'+SUBJ[x]+'</option>';}).join('')+'</select></div><div class="field"><label for="quizcount">Questions</label><select id="quizcount"><option>5</option><option selected>10</option><option>20</option><option>30</option></select></div></div><button class="focus-primary" data-act="quizstart">Start timed practice · 60 sec/question</button><p class="muted">'+qs.length+' saved questions available. Add your own questions below, including questions transcribed from your PYQ papers.</p></section>';
+ }
+ h+='<section class="stats-panel sect"><div class="panel-heading"><div><h2>Add a question</h2><p>Build your own chapter-wise MCQ bank from class notes and PYQs.</p></div></div><form data-act="questionadd"><div class="two"><div class="field"><label>Subject</label><select name="s">'+SORDER.map(function(x){return '<option value="'+x+'">'+SUBJ[x]+'</option>';}).join('')+'</select></div><div class="field"><label>Topic / chapter</label><input name="topic" maxlength="70" placeholder="e.g. Electrostatics" required></div></div><div class="field"><label>Question</label><textarea name="q" required maxlength="600" placeholder="Enter the question"></textarea></div><div class="two">'+[0,1,2,3].map(function(i){return '<div class="field"><label>Option '+String.fromCharCode(65+i)+'</label><input name="o'+i+'" required maxlength="180" placeholder="Answer option"></div>';}).join('')+'</div><div class="two"><div class="field"><label>Correct option</label><select name="answer"><option value="0">A</option><option value="1">B</option><option value="2">C</option><option value="3">D</option></select></div><div class="field"><label>Explanation (optional)</label><input name="explain" maxlength="300" placeholder="Why is this correct?"></div></div><button class="btn primary" type="submit">Save question</button></form></section>';
+ h+='<section class="stats-panel sect"><div class="panel-heading"><div><h2>Question bank</h2><p>Questions you have saved for practice.</p></div></div>'+(qs.length?qs.slice().reverse().slice(0,30).map(function(q){return '<div class="prow"><div style="flex:1"><b>'+SUBJ[q.s]+' · '+esc(q.topic)+'</b><div>'+esc(q.q)+'</div><span class="pcount">Correct: '+String.fromCharCode(65+q.answer)+'</span></div><button class="mini" data-act="qreview" data-id="'+q.id+'">'+(q.needsReview?'Reviewed':'Flag review')+'</button><button class="mini" data-act="qdel" data-id="'+q.id+'">Delete</button></div>';}).join(''):'<p class="empty-note">No questions yet. Add your first question above.</p>')+'</section>';
+ h+='<section class="stats-panel sect"><div class="panel-heading"><div><h2>Recent practice results</h2><p>Accuracy calculated from completed question sets.</p></div></div>'+(logs.length?logs.slice().reverse().slice(0,8).map(function(x){return '<div class="prow"><div><b>'+SUBJ[x.s]+' · '+x.correct+'/'+x.total+' correct</b><div class="muted">'+esc(x.date)+' · '+x.accuracy+'% accuracy</div></div></div>';}).join(''):'<p class="empty-note">Your completed practice sets will appear here.</p>')+'</section>';
+ return h;
+}
+function viewReadiness(){
+ var r=readiness(),weak=weakTopics(),ex=state.exams;
+ var h='<section class="stats-head"><div><div class="eyebrow">PREPAREDNESS, NOT A PROMISE</div><h1>Exam readiness</h1><p>An evidence-based snapshot from your saved syllabus, tests, practice and revision records.</p></div></section>';
+ h+='<section class="stats-panel sect"><div class="panel-heading"><div><h2>Readiness indicator</h2><p>This is a progress indicator, not a prediction of your actual exam result.</p></div><span class="unresolved">'+(r.evidence<2?'Limited data':'Based on your data')+'</span></div><div class="streak-number">'+(r.evidence<2?'—':r.score)+'<small>/100</small></div><div class="subject-track" style="height:12px;margin:14px 0"><i style="width:'+(r.evidence<2?0:r.score)+'%"></i></div><p class="muted">'+(r.evidence<2?'Log at least one mock test and some practice sessions to make this indicator more meaningful.':'The score combines syllabus completion (35%), mock accuracy (35%), practice accuracy (20%) and completed revision tasks (10%).')+'</p></section>';
+ h+='<div class="stats-kpis"><div class="stat-kpi"><span>SYLLABUS</span><b>'+r.syl+'<small>%</small></b><i class="kpi-line violet"></i></div><div class="stat-kpi"><span>MOCK ACCURACY</span><b>'+r.mock+'<small>%</small></b><i class="kpi-line blue"></i></div><div class="stat-kpi"><span>PRACTICE ACCURACY</span><b>'+r.prac+'<small>%</small></b><i class="kpi-line teal"></i></div><div class="stat-kpi"><span>REVISION DONE</span><b>'+r.rev+'<small>%</small></b><i class="kpi-line lime"></i></div></div>';
+ h+='<section class="stats-panel sect"><div class="panel-heading"><div><h2>Exam countdown</h2><p>Update dates in Settings if your official schedule changes.</p></div><button class="mini" data-act="tab" data-t="settings">Edit dates</button></div>';
+ [['JEE Main · Session 1',ex.jee1],['GSEB Board',ex.board],['GUJCET',ex.gujcet],['JEE Main · Session 2',ex.jee2]].forEach(function(x){var n=diffDays(x[1],today());h+='<div class="prow"><div><b>'+x[0]+'</b><div class="muted">'+esc(x[1])+'</div></div><b>'+(n>=0?n+' days left':Math.abs(n)+' days passed')+'</b></div>';});h+='</section>';
+ h+='<section class="stats-panel sect"><div class="panel-heading"><div><h2>Weak-topic signals</h2><p>Prioritised using unresolved mistakes and your practice/mock accuracy.</p></div></div>';
+ weak.forEach(function(x){h+='<div class="prow"><div style="flex:1"><b>'+SUBJ[x.s]+'</b><div class="muted">'+x.open+' unresolved mistakes · '+(x.accuracy===null?'No practice data':x.accuracy+'% practice accuracy')+' · '+(x.testAccuracy===null?'No mock data':x.testAccuracy+'% mock accuracy')+'</div></div><span class="unresolved">'+(x.score>=15?'Review first':x.score>=5?'Watch':'On track')+'</span></div>';});
+ h+='</section><section class="stats-panel sect"><div class="panel-heading"><div><h2>Recommended next actions</h2></div></div><div class="prow"><div><b>1. Clear overdue revisions</b><div class="muted">'+dueRevisions().length+' revisions currently due.</div></div><button class="mini" data-act="tab" data-t="hub">Open Smart Hub</button></div><div class="prow"><div><b>2. Attempt a timed question set</b><div class="muted">Use questions you have added to your practice bank.</div></div><button class="mini" data-act="tab" data-t="practice">Practice</button></div><div class="prow"><div><b>3. Resolve mistakes</b><div class="muted">'+state.mistakes.filter(function(m){return !m.fixed;}).length+' unresolved mistake notes.</div></div><button class="mini" data-act="tab" data-t="progress">Review mistakes</button></div></section>';
+ return h;
+}
+function checkStudyAlerts(){
+ if(!state.notifyEnabled||!('Notification' in window)||Notification.permission!=='granted')return;
+ var key=today(),msgs=[];var due=dueRevisions();if(due.length)msgs.push(due.length+' revision(s) are due today.');
+ [['JEE Main',state.exams.jee1],['Board exam',state.exams.board],['GUJCET',state.exams.gujcet],['JEE Main Session 2',state.exams.jee2]].forEach(function(x){var n=diffDays(x[1],key);if([7,3,1,0].indexOf(n)>=0)msgs.push(x[0]+(n===0?' is today.':' is in '+n+' days.'));});
+ if(msgs.length&&state.alertSent!==key){try{new Notification('Pocket Adviser · Study reminder',{body:msgs.join(' '),tag:'pa-'+key});state.alertSent=key;save();}catch(e){}}
+}
+
+var PAPERS=[
+ {id:'gseb',title:'GSEB Class 12 Science (English medium)',tag:'Board',sub:'Physics, Chemistry and Maths papers',years:[2026,2025,2024,2023,2022,2020],chips:[['phy','Physics'],['che','Chem'],['mat','Maths']]},
+ {id:'gujcet',title:'GUJCET',tag:'Entrance',sub:'Physics and Chemistry booklet, then Maths booklet',years:[2025,2024,2023,2022,2021,2020,2019],chips:[['pc','Phy + Chem'],['mat','Maths']]},
+ {id:'jee',title:'JEE Main',tag:'Entrance',sub:'Solve full shifts in Phase 2; chapter-wise before that',years:[2026,2025,2024,2023,2022],chips:[['s1','Session 1'],['s2','Session 2']]}
+];
+function shortName(n){n=String(n).replace(/\.pdf$/i,'');return n.length>22?n.slice(0,20)+'..':n;}
+function paperCount(g){var n=0,t=g.years.length*g.chips.length;g.years.forEach(function(y){g.chips.forEach(function(c){if(state.papers[g.id+'|'+y+'|'+c[0]]) n++;});});return [n,t];}
+function viewDoubts(){
+  var h='<section class="sect"><h2>Ask a doubt</h2><div class="muted">Type your question or add a photo of it. You get short steps matched to Class 12 NCERT, Boards, GUJCET and JEE Main.</div></section>';
+  if(!sampleApi) h+='<div class="warnbox">The in-app doubt solver is not available in this view. Use the links at the bottom.</div>';
+  h+='<section class="card sect"><div class="field"><label for="dsubj">Subject</label><select id="dsubj" data-act="dsubj">'+SORDER.map(function(s){return '<option value="'+s+'"'+(doubtSubj===s?' selected':'')+'>'+SUBJ[s]+'</option>';}).join('')+'</select></div>';
+  h+='<textarea id="dq" placeholder="Write your doubt here (Hindi, English or Hinglish)" aria-label="Your doubt" style="font-family:var(--f-body);font-size:15px">'+esc(doubtDraft)+'</textarea>';
+  h+='<div class="links">'+(doubtImg?'<label class="btn attach">Add photo<input type="file" accept="image/*" data-act="doubtimg"></label>':'')+'<button class="btn primary" data-act="ask"'+((sampleApi&&!doubtBusy)?'':' disabled')+'>'+(doubtBusy?'Thinking...':'Ask')+'</button></div>';
+  h+='<div class="muted" id="dfname">'+(doubtFile?esc(doubtFile.name):'')+'</div>';
+  if(doubtBusy||doubtLive) h+='<div class="answer" id="dans" aria-live="polite">'+(doubtLive?esc(doubtLive):'Thinking...')+'</div>';
+  h+='</section>';
+  if(state.doubts.length){
+    h+='<section class="card sect"><h3 style="font-size:16px">Earlier doubts</h3>'+state.doubts.map(function(d){
+      return '<details class="hist"><summary><b>'+SUBJ[d.s]+'</b> · '+esc(d.q.length>70?d.q.slice(0,68)+'..':d.q)+'</summary><div class="answer">'+esc(d.a)+'</div><div class="links" style="margin-top:8px"><button class="mini" data-act="dmist" data-id="'+d.id+'">Save to Mistakes</button><button class="mini" data-act="ddel" data-id="'+d.id+'">Delete</button></div></details>';
+    }).join('')+'</section>';
+  }
+  h+='<section class="card sect"><h3 style="font-size:16px">Other apps</h3><div class="links"><a class="btn" href="https://chatgpt.com/" target="_blank" rel="noopener">Open ChatGPT</a><a class="btn" href="https://lens.google.com/" target="_blank" rel="noopener">Open Google Lens</a></div><div class="muted">These open in your browser or app. Their answers cannot come back into this page.</div></section>';
+  return h;
+}
+function askText(subj,q,hasImg){
+  return 'You are a patient tutor for a Class 12 Science student (GSEB, English medium) preparing for JEE Main, GSEB Boards and GUJCET. Subject: '+SUBJ[subj]+'. '
+   +'Reply in the language the student wrote in (use Hinglish if they mix Hindi and English). '
+   +(hasImg?'A photo of the question is attached. First say in one line what question you read; if the photo is unreadable, say so and ask for a clearer one. ':'')
+   +'Explain in short numbered steps. Use plain text math only (x², √, ×, a/b), no LaTeX or markdown symbols. '
+   +'End with a line starting "Watch out:" naming one common mistake, and a line starting "NCERT:" naming the chapter to revise. Keep it under 250 words unless the question needs more.\n\nStudent doubt: '+(q||'(see the photo)');
+}
+var NCERT_BOOKS=[
+ {s:'Physics',parts:[
+  {name:'Part I',chapters:['Electric Charges and Fields','Electrostatic Potential and Capacitance','Current Electricity','Moving Charges and Magnetism','Magnetism and Matter','Electromagnetic Induction','Alternating Current','Electromagnetic Waves'],prefix:'leph1'},
+  {name:'Part II',chapters:['Ray Optics and Optical Instruments','Wave Optics','Dual Nature of Radiation and Matter','Atoms','Nuclei','Semiconductor Electronics'],prefix:'leph2'}]},
+ {s:'Chemistry',parts:[
+  {name:'Part I',chapters:['Solutions','Electrochemistry','Chemical Kinetics','The d- and f-Block Elements','Coordination Compounds'],prefix:'lech1'},
+  {name:'Part II',chapters:['Haloalkanes and Haloarenes','Alcohols, Phenols and Ethers','Aldehydes, Ketones and Carboxylic Acids','Amines','Biomolecules'],prefix:'lech2'}]},
+ {s:'Mathematics',parts:[
+  {name:'Part I',chapters:['Relations and Functions','Inverse Trigonometric Functions','Matrices','Determinants','Continuity and Differentiability','Applications of Derivatives'],prefix:'lemh1'},
+  {name:'Part II',chapters:['Integrals','Applications of Integrals','Differential Equations','Vector Algebra','Three Dimensional Geometry','Linear Programming','Probability'],prefix:'lemh2'}]}
+];
+function ncertChapterURL(prefix,num){return 'https://ncert.nic.in/textbook/pdf/'+prefix+String(num).padStart(2,'0')+'.pdf';}
+function pdfCell(key){
+ var docs=state.pdfs.filter(function(item){return item.key===key;});
+ var h='<div class="pdf-cell">';
+ if(docs.length){h+='<div class="pdf-list">'+docs.map(function(doc){return '<div class="prow"><a href="'+esc(doc.url||'#')+'" target="_blank" rel="noopener">'+esc(shortName(doc.name||'PDF'))+'</a>'+(doc.id?'<button class="mini" data-act="pdfdel" data-id="'+esc(doc.id)+'">Remove</button>':'')+'</div>';}).join('')+'</div>';}
+ h+='<label class="btn attach">Attach PDF<input type="file" accept="application/pdf,.pdf" data-act="upload" data-k="'+esc(key)+'" aria-label="Attach PDF"></label>';
+ h+='</div>';return h;
+}
+function libraryHTML(){
+ var h='<section class="card sect"><h3 style="font-size:16px">NCERT Class 12 · chapter-wise PDFs</h3><div class="muted">Tap Open PDF to open the chapter in this browser tab; use Back to return to Pocket Adviser. These are the current PDFs listed by NCERT as checked on 22 Nov 2026; NCERT does not label every online book as a separate “2026–27 edition”. PDFs are opened from NCERT, not copied into this app.</div><div class="links"><a class="btn primary" href="https://ncert.nic.in/textbook.php" target="_self">NCERT official textbook catalogue</a></div></section>';
+ NCERT_BOOKS.forEach(function(book){
+  h+='<section class="card pgroup"><h3 style="font-size:18px">'+esc(book.s)+'</h3>';
+  book.parts.forEach(function(part){
+   h+='<div class="hint" style="margin:10px 0 6px;display:flex;align-items:center;justify-content:space-between;gap:8px"><span>'+esc(part.name)+'</span><a class="mini" target="_self" href="https://ncert.nic.in/textbook.php?'+part.prefix+'=1-'+part.chapters.length+'">Official book page</a></div>';
+   h+=part.chapters.map(function(ch,i){var url=ncertChapterURL(part.prefix,i+1);return '<div class="prow"><div class="ptop"><span>'+esc(ch)+'</span><a class="mini" href="'+url+'" target="_self">Open PDF</a></div></div>';}).join('');
+  });
+  h+='</section>';
+ });
+ h+='<section class="card pgroup"><h3 style="font-size:18px">NCERT Exemplar</h3><div class="hint">Official NCERT book PDFs / question material</div><div class="links"><a class="btn" href="https://ncert.nic.in/exemplar-problems.php?ln=en" target="_self">Physics, Chemistry & Maths Exemplar</a></div></section>';
+ h+='<section class="card pgroup"><h3 style="font-size:18px">GSEB English-medium textbooks</h3><div class="links"><a class="btn" href="https://gujaratboard.in/TextBooks/Std12" target="_self">Open Std 12 textbooks</a></div><div class="muted">GSEB textbook portal is separate from NCERT; use the GSEB book where your board syllabus differs.</div></section>';
+ h+='<section class="card pgroup"><h3 style="font-size:18px">My own notes / PDFs</h3><div class="hint">Attach your coaching notes, formula sheets or any PDFs here.</div>'+[['s-p','Physics'],['s-c','Chemistry'],['s-m','Maths']].map(function(it){return '<div class="prow"><div class="ptop"><span>'+it[1]+'</span></div>'+pdfCell('lib|'+it[0])+'</div>';}).join('')+'</section>';
+ return h;
+}
+function viewPapers(){
+ var h='<section class="sect"><h2>PYQ Library</h2><div class="muted">Exam-wise archives, with the source type clearly labelled. I have not marked an entire year as “officially verified” unless the board/NTA itself provides the paper. Open a paper, check its year, subject, medium and exam before attempting it.</div></section>';
+ h+='<section class="card pgroup"><h3 style="font-size:18px">GSEB Class 12 Science · English medium</h3><div class="hint">Physics · Chemistry · Mathematics · Part A + Part B</div><div class="links"><a class="btn primary" href="https://www.gsebeservice.com/" target="_self">GSEB official board website</a><a class="btn" href="https://previousyearquestions.app/gujarat-hsc/" target="_self">Year-wise HSC paper archive</a></div><div class="muted">Verification note: GSEB’s official public paper archive coverage is limited/uneven. A reviewed archive reports original board papers through March 2022 (including 2020, 2021 and 2022); it says 2023–2026 full papers are not published there. Do not treat 2023–2026 answer keys or sample papers as full PYQ papers. Check English-medium subject/set before solving.</div></section>';
+ h+='<section class="card pgroup"><h3 style="font-size:18px">GUJCET · Physics-Chemistry + Mathematics</h3><div class="hint">Past papers listed from 2014–2025; subject/booklet availability varies by year.</div><div class="links"><a class="btn primary" href="https://docs.aglasem.com/org/gujarat-board/gujcet/question-paper" target="_self">Open year-wise GUJCET papers</a><a class="btn" href="https://gujcet.gseb.org/" target="_self">GUJCET official portal</a></div><div class="muted">The archive lists 19 documents across 2014–2025. It is a third-party document index, not a GSEB-hosted archive; verify year, English medium and PC/Maths booklet before using.</div></section>';
+ h+='<section class="card pgroup"><h3 style="font-size:18px">JEE Main · Paper 1 (B.E./B.Tech)</h3><div class="hint">Physics · Chemistry · Mathematics · shift-wise papers</div><div class="links"><a class="btn primary" href="https://jeemain.nta.nic.in/" target="_self">NTA official question papers</a><a class="btn" href="https://www.smartailabs.in/previous-year-papers/jee_main/" target="_self">Older year paper archive</a></div><div class="muted">NTA currently lists 2026 question-paper PDFs on its official site. Older years may be archive/mirror copies; use the final answer key where available and check session, date and shift.</div></section>';
+ h+='<section class="stats-panel sect"><div class="panel-heading"><div><h2>My PYQ practice tracker</h2><p>Record what you have solved from the linked archives.</p></div></div><div class="two"><div class="field"><label>Exam</label><select id="pyqexam"><option value="GSEB Board">GSEB Board</option><option value="GUJCET">GUJCET</option><option value="JEE Main">JEE Main</option></select></div><div class="field"><label>Year / session</label><input id="pyqyear" placeholder="e.g. 2025" maxlength="20"></div></div><div class="two"><div class="field"><label>Subject</label><select id="pyqsub">'+SORDER.map(function(x){return '<option value="'+x+'">'+SUBJ[x]+'</option>';}).join('')+'</select></div><div class="field"><label>Status</label><select id="pyqstate"><option value="not-started">Not started</option><option value="attempted">Attempted</option><option value="reviewed">Reviewed</option></select></div></div><button class="btn primary" data-act="pyqsave">Save PYQ progress</button>'+(Object.keys(state.pyqStatus||{}).length?Object.keys(state.pyqStatus).map(function(k){var z=state.pyqStatus[k];return '<div class="prow"><div><b>'+esc(z.exam)+' · '+esc(z.year)+' · '+SUBJ[z.s]+'</b><div class="muted">'+esc(z.status)+'</div></div><button class="mini" data-act="pyqdel" data-id="'+esc(k)+'">Remove</button></div>';}).join(''):'<p class="empty-note">No PYQs tracked yet.</p>')+'</section>';
+ h+='<section class="card sect"><h3 style="font-size:16px">Important accuracy note</h3><div class="muted">I have deliberately not inserted random PDFs or fabricated direct paper links. Some GSEB years do not have publicly verifiable full papers on the official site, and some third-party indexes require an extra document page before the PDF. This is safer than showing a wrong year, subject or medium as a verified paper.</div></section>';
+ h+='<h2 style="font-size:20px;margin-top:6px">Books and practice material</h2>'+libraryHTML();
+ return h;
+}
+function viewSettings(){
+  var e=state.exams;
+  var h='<section class="sect"><h2>Settings</h2></section>';
+  if(!storageOK) h+='<div class="warnbox">This browser view cannot save data. Copy your backup below often, or open the page in a normal browser tab.</div>';
+  h+='<section class="card sect"><h3 style="font-size:16px">Exam dates</h3><div class="muted">Tentative dates from public news. Change them when official notices arrive.</div><div class="two">';
+  [['jee1','JEE Main Session 1'],['board','Boards start'],['gujcet','GUJCET'],['jee2','JEE Main Session 2']].forEach(function(r){
+    h+='<div class="field"><label for="ex-'+r[0]+'">'+r[1]+'</label><input type="date" id="ex-'+r[0]+'" data-act="exam" data-k="'+r[0]+'" value="'+esc(e[r[0]]||'')+'"></div>';
+  });
+  h+='</div></section>';
+  h+='<section class="card sect"><h3 style="font-size:16px">Coaching</h3><div class="muted">Used on days marked as coaching days. Your self-study blocks are scheduled around these times.</div><div class="two"><div class="field"><label for="cs">Coaching starts</label><input type="time" id="cs" data-act="cs" value="'+esc(state.cs)+'"></div><div class="field"><label for="ce">Coaching ends</label><input type="time" id="ce" data-act="ce" value="'+esc(state.ce)+'"></div></div>';
+  h+='<div class="muted">Coaching days each week</div><div class="days">'+DOWS.map(function(n,i){return '<label class="task" style="min-height:44px;padding:0 10px 0 0;align-items:center"><input type="checkbox" data-act="cday" data-i="'+i+'"'+(state.coachDays[i]?' checked':'')+'><span class="box" aria-hidden="true"></span><span class="txt">'+n+'</span></label>';}).join('')+'</div></section>';
+  h+='<section class="card sect"><h3 style="font-size:16px">Study notifications</h3><div class="muted">When enabled, the app can notify you about due revisions and exam countdown milestones while it is open or supported by your browser. Browser notifications require permission.</div><label class="task"><input type="checkbox" data-act="notifytoggle" '+(state.notifyEnabled?'checked':'')+'><span class="box"></span><span class="txt">Enable revision and exam reminders</span></label><div class="pwa-note">Notifications are local to this device. They are not guaranteed while the browser is fully closed.</div></section>';
+  h+='<section class="card sect"><h3 style="font-size:16px">Cloud account & sync</h3><div class="muted">Sign in with the same email on your other devices to sync your planner, syllabus progress, practice logs and settings. Your records are private to your account. Local saving continues if you go offline.</div><p class="pwa-note" id="sync-status">'+esc(sbStatus)+'</p>';
+  if(sbUser){h+='<p><b>Connected:</b> '+esc(sbUser.email||'Account')+'</p><button class="btn" data-act="cloudsync">Sync now</button> <button class="btn warn" data-act="cloudout">Sign out</button>';}
+  else{h+='<div class="field"><label for="cloud-email">Email</label><input id="cloud-email" type="email" autocomplete="email" placeholder="you@example.com"></div><div class="field"><label for="cloud-password">Password</label><input id="cloud-password" type="password" autocomplete="current-password" placeholder="At least 6 characters"></div><div class="links"><button class="btn primary" data-act="cloudin">Sign in</button><button class="btn" data-act="cloudsignup">Create free account</button></div>';}
+  h+='<div class="links"><button class="btn" data-act="backupfile">Download backup now</button><label class="btn attach">Restore backup<input type="file" accept="application/json,.json" data-act="restorefile"></label></div></section>';
+  h+='<section class="card sect"><h3 style="font-size:16px">Backup</h3><div class="muted">Your data stays in this browser. Copy the text below somewhere safe. To restore, paste it into the second box.</div><textarea id="exp" readonly aria-label="Backup text">'+esc(JSON.stringify(state))+'</textarea><div><button class="btn" data-act="copy">Copy backup</button></div><textarea id="imp" placeholder="Paste a backup here" aria-label="Paste backup"></textarea><div><button class="btn" data-act="import">Restore from backup</button></div></section>';
+  h+='<section class="card sect"><h3 style="font-size:16px">Start over</h3><div class="muted">Clears all ticks, stages, tasks and mistakes.</div><div>'+(resetArm?'<button class="btn warn" data-act="reset2">Yes, erase everything</button> <button class="btn" data-act="reset0">Cancel</button>':'<button class="btn warn" data-act="reset1">Erase all data</button>')+'</div></section>';
+  return h;
+}
+
+var ICONS={
+  today:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M8 12.5l3 3 5-6"></path></svg>',
+  calendar:'<svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="2"></rect><path d="M3.5 10h17M8 3v4M16 3v4"></path></svg>',
+  syllabus:'<svg viewBox="0 0 24 24"><path d="M5 4h11a3 3 0 013 3v13H8a3 3 0 01-3-3V4z"></path><path d="M9 9h6M9 13h6"></path></svg>',
+  progress:'<svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M21 20H3"></path></svg>',
+  focus:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>',
+  doubts:'<svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"></path><path d="M10 9.5a2 2 0 114 0c0 1.5-2 1.5-2 3M12 14.7v.01"></path></svg>',
+  papers:'<svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7z"></path><path d="M14 3v4h4M10 12h5M10 16h5"></path></svg>',
+  hub:'<svg viewBox="0 0 24 24"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"></path></svg>',
+  practice:'<svg viewBox="0 0 24 24"><path d="M8 5h12M8 12h12M8 19h12M3 5h.01M3 12h.01M3 19h.01"></path></svg>',
+  readiness:'<svg viewBox="0 0 24 24"><path d="M4 19V5m0 14h16M8 15l3-4 3 2 5-7"></path></svg>'
+};
+var TABS=[['today','Home'],['calendar','Calendar'],['syllabus','Syllabus'],['focus','Focus'],['hub','Smart Hub'],['practice','Practice'],['readiness','Readiness'],['doubts','Doubts'],['papers','Library']];
+
+function render(){
+  var y=window.scrollY||0,main=document.getElementById('main'),h;
+  if(tab==='today') h=viewToday();
+  else if(tab==='calendar') h=viewCalendar();
+  else if(tab==='syllabus') h=viewSyllabus();
+  else if(tab==='doubts') h=viewDoubts();
+  else if(tab==='papers') h=viewPapers();
+  else if(tab==='hub') h=viewHub();
+  else if(tab==='focus') h=viewFocus();
+  else if(tab==='progress') h=viewProgress();
+  else if(tab==='practice') h=viewPractice();
+  else if(tab==='readiness') h=viewReadiness();
+  else h=viewSettings();
+  main.innerHTML=h;
+  var navItems=TABS.map(function(t){return '<button class="side-link" data-act="tab" data-t="'+t[0]+'"'+(tab===t[0]?' aria-current="page"':'')+'>'+ICONS[t[0]]+'<span>'+t[1]+'</span></button>';}).join('');
+  document.getElementById('sideNav').innerHTML='<div class="side-group">'+navItems+'</div><div class="side-caption side-caption-lower">YOUR DATA</div><button class="side-link" data-act="tab" data-t="progress"'+(tab==='progress'?' aria-current="page"':'')+'>'+ICONS.progress+'<span>Progress report</span></button><button class="side-link" data-act="tab" data-t="settings"'+(tab==='settings'?' aria-current="page"':'')+'><span>⚙</span><span>Settings</span></button>';
+  var primary=[['today','Home'],['syllabus','Syllabus'],['focus','Focus'],['progress','Stats']],secondary=[['calendar','Calendar'],['hub','Smart Hub'],['practice','Practice'],['readiness','Readiness'],['doubts','Doubts'],['papers','Library'],['settings','Settings']];
+  document.getElementById('tabs').innerHTML=primary.map(function(t){return '<button class="tab" data-act="tab" data-t="'+t[0]+'"'+(tab===t[0]?' aria-current="page"':'')+'>'+ICONS[t[0]]+'<span>'+t[1]+'</span></button>';}).join('')+'<details class="mobile-more"><summary class="tab" aria-label="More navigation"><span class="more-dots">•••</span><span>More</span></summary><div class="more-menu">'+secondary.map(function(t){return '<button class="more-item" data-act="tab" data-t="'+t[0]+'">'+(ICONS[t[0]]||'')+'<span>'+t[1]+'</span></button>';}).join('')+'</div></details>';
+  var t=today(),e=state.exams,chips='';
+  [['JEE Main',e.jee1],['Boards',e.board]].forEach(function(r){var n=diffDays(r[1],t);if(n>=0) chips+='<span class="cd-chip">'+r[0]+' <b>'+n+'d</b></span>';});
+  document.getElementById('chips').innerHTML=chips;
+  document.getElementById('topdate').textContent=longDate(t);
+  if(window.scrollTo&&y) window.scrollTo(0,y);
+}
+function toast(msg){
+  var el=document.getElementById('toast');el.textContent=msg;el.className='on';
+  clearTimeout(toastT);toastT=setTimeout(function(){el.className='';},2200);
+}
+
+/* ---------- events ---------- */
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+function act(el,type){
+  var a=el.dataset.act,date=el.dataset.date,id=el.dataset.id,i;
+  switch(a){
+    case 'cloudin': connectCloud('signin'); break;
+    case 'cloudsignup': connectCloud('signup'); break;
+    case 'cloudout': disconnectCloud(); break;
+    case 'cloudsync': syncPush(); break;
+    case 'tab': var dqe=document.getElementById('dq');if(dqe) doubtDraft=dqe.value;var targetTab=el.dataset.t;if(TABS.some(function(x){return x[0]===targetTab;})||targetTab==='settings'||targetTab==='progress'||targetTab==='focus'){var mmenu=document.querySelector('.mobile-more');if(mmenu)mmenu.open=false;tab=targetTab;resetArm=false;if(tab==='calendar'&&!cal.sel){cal.sel=today();}window.scrollTo&&window.scrollTo(0,0);render();}break;
+    case 'tick':{
+      var key=el.dataset.key;
+      if(key.indexOf('c:')===0){
+        var cl=state.custom[date]||[],cid=key.slice(2);
+        cl.forEach(function(t){if(t.id===cid) t.done=el.checked;});
+      }else{
+        var dd=state.done[date]||(state.done[date]={});
+        if(el.checked) dd[key]=1;else delete dd[key];
+        var parts=key.split('|');
+        var pb=parts[0].split('#')[0];
+        if(el.checked&&(pb==='che'||pb==='phy'||pb==='mat')&&parts[1]!=='-') state.last[pb]={ch:parts[1],date:date};
+      }
+      save();render();break;
+    }
+    case 'paper': if(state.papers[el.dataset.k]) delete state.papers[el.dataset.k];else state.papers[el.dataset.k]=1;save();render();break;
+    case 'upload':{
+      var f=el.files&&el.files[0];
+      if(!f) break;
+      if(!assetsApi){toast('PDF storage is not available in this view.');break;}
+      if(f.size>20*1024*1024){toast('That PDF is over 20 MB.');break;}
+      toast('Uploading '+shortName(f.name)+'...');
+      var k=el.dataset.k;
+      assetsApi.upload(f).then(function(r){state.pdfs.push({id:r.id,url:r.url,name:f.name,key:k});save();render();toast('PDF attached.');}).catch(function(){toast('Upload failed. Try again.');});
+      break;
+    }
+    case 'pdfdel':{
+      if(!assetsApi) break;
+      assetsApi.delete(id).then(function(){state.pdfs=state.pdfs.filter(function(x){return x.id!==id;});save();render();toast('PDF removed.');}).catch(function(){toast('Could not remove it.');});
+      break;
+    }
+    case 'dsubj': doubtSubj=el.value;break;
+    case 'doubtimg':{
+      doubtFile=(el.files&&el.files[0])||null;
+      var fn=document.getElementById('dfname');if(fn) fn.textContent=doubtFile?doubtFile.name:'';
+      break;
+    }
+    case 'ask':{
+      if(!sampleApi||doubtBusy) break;
+      var dq=document.getElementById('dq');if(dq) doubtDraft=dq.value.trim();
+      if(!doubtDraft&&!doubtFile){toast('Type your doubt or add a photo.');break;}
+      var qt=doubtDraft,sj=doubtSubj,fl=doubtImg?doubtFile:null;
+      doubtBusy=true;doubtLive='';render();
+      var opts={modelTier:'default',cache:false,onText:function(o){doubtLive=o.text;var a=document.getElementById('dans');if(a) a.textContent=o.text;}};
+      if(fl) opts.images=[fl];
+      sampleApi(askText(sj,qt,!!fl),opts).then(function(r){
+        state.doubts.unshift({id:uid(),s:sj,q:qt||'(photo question)',a:r.text,d:today()});
+        state.doubts=state.doubts.slice(0,15);
+        doubtBusy=false;doubtLive='';doubtDraft='';doubtFile=null;save();render();
+      }).catch(function(e){
+        doubtBusy=false;doubtLive='';render();
+        toast(e&&e.code==='rate_limited'?'Too many questions. Wait a minute and try again.':e&&e.code==='not_granted'?'The doubt solver is not allowed here.':'Could not get an answer. Try again.');
+      });
+      break;
+    }
+    case 'dmist':{
+      var dd2=state.doubts.filter(function(x){return x.id===id;})[0];
+      if(dd2){state.mistakes.push({id:uid(),s:dd2.s,t:dd2.q.slice(0,120),date:today(),fixed:false});save();toast('Saved to Mistakes.');}
+      break;
+    }
+    case 'ddel': state.doubts=state.doubts.filter(function(x){return x.id!==id;});save();render();break;
+    case 'modesel':
+      delete state.dayOver[date];
+      state.modes[date]=el.value;save();render();break;
+    case 'blkch':{
+      var sj=el.dataset.subj,c3=chById(el.value),tsn=getSnap(today());
+      if(c3&&tsn){state.snap[today()]=tsn;tsn[sj]={ch:c3.id,st:st(c3.id)};save();render();toast('Today\'s '+SUBJ[sj]+' chapter changed.');}
+      break;
+    }
+    case 'hold': state.hold[id]=!state.hold[id];if(!state.hold[id]) delete state.hold[id];
+      var hc=chById(id);if(hc) retarget(hc.s);save();render();toast(state.hold[id]?'Held. It stays out of Today until you release it.':'Released.');break;
+    case 'redit': editing=true;draft=draftFromDay(today());draftName='';editingId=null;render();break;
+    case 'radd':{
+      draft=readDraft();
+      var last=draft.length?draft[draft.length-1].e:'09:00';
+      draft.push({t:'che',s:last,e:hhmm(toMin(last)+60),n:''});render();break;
+    }
+    case 'rdel': draft=readDraft();draft.splice(+el.dataset.i,1);render();break;
+    case 'rcancel': editing=false;render();break;
+    case 'rtoday':{
+      var rows=readDraft();if(!validDraft(rows)) break;
+      state.dayOver[today()]=rows;editing=false;save();render();toast('Routine set for today.');break;
+    }
+    case 'rsave':{
+      var rows2=readDraft();if(!validDraft(rows2)) break;
+      var nmEl=document.getElementById('tname'),nm2=((nmEl&&nmEl.value)||'').trim()||'My routine';
+      if(editingId&&tplById(editingId)){var tt=tplById(editingId);tt.name=nm2;tt.blocks=rows2;}
+      else{editingId='t'+uid();state.templates.push({id:editingId,name:nm2,blocks:rows2});}
+      delete state.dayOver[today()];state.modes[today()]='t:'+editingId;
+      editing=false;editingId=null;save();render();toast('Template saved and used for today.');break;
+    }
+    case 'tplday': delete state.dayOver[today()];state.modes[today()]='t:'+id;editing=false;save();render();break;
+    case 'tpledit':{
+      var tp=tplById(id);if(tp){draft=tp.blocks.map(function(r){return {t:r.t,s:r.s,e:r.e,n:r.n||''};});draftName=tp.name;editingId=id;render();}
+      break;
+    }
+    case 'tpldef': state.defTpl=(state.defTpl===id)?null:id;save();render();break;
+    case 'tpldel': state.templates=state.templates.filter(function(t){return t.id!==id;});if(state.defTpl===id) state.defTpl=null;if(editingId===id) editingId=null;save();render();break;
+    case 'tpreset':{var tm=document.getElementById('tmin');if(tm) tm.value=el.dataset.m;break;}
+    case 'focusPreset': state.hubPreset=+el.dataset.m;render();break;
+    case 'focusSubject': state.focusSubject=el.value;save();break;
+    case 'focusStart':{var fs=document.getElementById('focusSubject');if(fs)state.focusSubject=fs.value;var nmin=parseInt((document.getElementById('tmin')||{}).value,10)||25;unlockAudio();state.timer={end:Date.now()+nmin*60000,total:nmin*60,label:state.focusSubject||'Focus'};save();render();break;}
+    case 'tbeep': beep(2);break;
+    case 'tstart':{
+      var mins=parseInt((document.getElementById('tmin')||{}).value,10),un=(document.getElementById('tuntil')||{}).value;
+      if(un&&/^\d\d:\d\d$/.test(un)){
+        var n2=new Date(),nowm=n2.getHours()*60+n2.getMinutes()+n2.getSeconds()/60,um=toMin(un);
+        if(um>nowm) mins=Math.ceil(um-nowm);else{toast('That time has already passed today.');break;}
+      }
+      if(!mins||mins<1||mins>600){toast('Enter minutes between 1 and 600.');break;}
+      unlockAudio();
+      var fs=document.getElementById('focusSubject');state.focusSubject=fs?fs.value:(state.focusSubject||'Physics');state.timer={end:Date.now()+mins*60000,total:mins*60,label:state.focusSubject};save();render();break;
+    }
+    case 'tpause':{var lf=timerLeft();if(state.timer){state.timer.left=lf;state.timer.end=0;save();render();}break;}
+    case 'tresume':{if(state.timer){state.timer.end=Date.now()+(state.timer.left||0)*1000;save();render();}break;}
+    case 'tstop':{
+      if(state.timer){var spent=state.timer.total-timerLeft();addFocus(spent);state.timer=null;save();render();}
+      break;
+    }
+    case 'remind': state.remind=el.checked;if(el.checked){unlockAudio();beep(1);}save();render();break;
+    case 'copyroute':{
+      var txt=copyRoutineText(date),ok=false;
+      try{navigator.clipboard.writeText(txt).then(function(){toast('Routine copied. Paste it in your chat.');},function(){toast('Could not copy.');});ok=true;}catch(e){}
+      if(!ok) toast('Could not copy.');
+      break;
+    }
+    case 'finish':{
+      var s=el.dataset.subj,sn=state.snap[today()],b=sn&&sn[s];
+      if(b&&st(b.ch)===b.st){
+        state.stage[b.ch]=b.st+1;
+        if(state.stage[b.ch]===4&&!state.revision.some(function(r){return r.ch===b.ch;})){[1,3,7,15].forEach(function(n,j){state.revision.push({id:uid(),ch:b.ch,label:['Day 1','Day 3','Day 7','Day 15'][j],due:addDays(today(),n),done:false});});}
+        if(state.focus[s]===b.ch&&state.stage[b.ch]>=4) state.focus[s]=null;
+        save();render();toast('Stage saved. Nice work.');
+      }
+      break;
+    }
+    case 'nextstage':{
+      var s2=el.dataset.subj,c=curChapter(s2,today());
+      if(c&&state.snap[today()]){state.snap[today()][s2]={ch:c.id,st:st(c.id)};save();render();toast('Next stage loaded.');}
+      break;
+    }
+    case 'delcustom': state.custom[date]=(state.custom[date]||[]).filter(function(t){return t.id!==id;});save();render();break;
+    case 'calprev': cal.m--;if(cal.m<0){cal.m=11;cal.y--;}render();break;
+    case 'calnext': cal.m++;if(cal.m>11){cal.m=0;cal.y++;}render();break;
+    case 'caltoday': var n=new Date();cal.y=n.getFullYear();cal.m=n.getMonth();cal.sel=today();render();break;
+    case 'calsel': cal.sel=date;render();break;
+    case 'filter': synFilter=el.dataset.f;render();break;
+    case 'focus':{
+      var ch=chById(id);if(!ch) break;
+      if(state.focus[ch.s]===id) state.focus[ch.s]=null;else state.focus[ch.s]=id;
+      retarget(ch.s);save();render();toast(state.focus[ch.s]?ch.n+' is your focus.':'Back to automatic order.');break;
+    }
+    case 'stage':{
+      var c2=chById(id);if(!c2) break;
+      i=+el.dataset.i;
+      state.stage[id]=(st(id)===i+1)?i:i+1;
+      if(state.stage[id]===4&&!state.revision.some(function(r){return r.ch===id;})){[1,3,7,15].forEach(function(n,j){state.revision.push({id:uid(),ch:id,label:['Day 1','Day 3','Day 7','Day 15'][j],due:addDays(today(),n),done:false});});}
+      retarget(c2.s);save();render();break;
+    }
+    case 'delch': state.extra=state.extra.filter(function(x){return x.id!==id;});delete state.stage[id];if(state.focus.che===id) state.focus.che=null;if(state.focus.phy===id) state.focus.phy=null;if(state.focus.mat===id) state.focus.mat=null;save();render();break;
+    case 'mistfix': state.mistakes.forEach(function(x){if(x.id===id) x.fixed=el.checked;});save();render();break;
+    case 'mistdel': state.mistakes=state.mistakes.filter(function(x){return x.id!==id;});save();render();break;
+    case 'exam': state.exams[el.dataset.k]=el.value;save();render();break;
+    case 'cs': if(el.value){if(toMin(el.value)>=toMin(state.ce)){toast('Coaching start must be earlier than its end.');render();break;}state.cs=el.value;save();render();}break;
+    case 'ce': if(el.value){if(toMin(el.value)<=toMin(state.cs)){toast('Coaching end must be later than its start.');render();break;}state.ce=el.value;save();render();}break;
+    case 'cday': state.coachDays[+el.dataset.i]=el.checked;save();render();break;
+    case 'copy':{
+      var ta=document.getElementById('exp');
+      try{ta.select();}catch(e){}
+      var done=false;
+      try{navigator.clipboard.writeText(ta.value).then(function(){toast('Backup copied.');},function(){toast('Press and hold the text to copy it.');});done=true;}catch(e){}
+      if(!done) toast('Press and hold the text to copy it.');
+      break;
+    }
+    case 'import':{
+      var v=document.getElementById('imp').value.trim(),o=null;
+      try{o=JSON.parse(v);}catch(e){}
+      if(!o||typeof o!=='object'||!o.stage){toast('That text is not a valid backup.');break;}
+      state=normaliseState(o);save();render();toast('Backup restored.');break;
+    }
+    case 'planhours': state.plannerHours=Math.max(1,Math.min(14,Number(el.value)||4));save();render();break;
+    case 'planadd':{var pl=smartPlan(state.plannerHours),it=pl.items[+el.dataset.i];if(it){(state.custom[today()]||(state.custom[today()]=[])).push({id:uid(),text:it.min+' min · '+it.text,done:false});save();toast('Added to today.');render();}break;}
+    case 'planall':{var pl2=smartPlan(state.plannerHours);(state.custom[today()]||(state.custom[today()]=[]));pl2.items.forEach(function(it){state.custom[today()].push({id:uid(),text:it.min+' min · '+it.text,done:false});});save();toast('Smart plan added to today.');tab='today';render();break;}
+    case 'revdone':{state.revision.forEach(function(r){if(r.id===id)r.done=true;});save();render();toast('Revision completed.');break;}
+    case 'mockdel':state.mockTests=state.mockTests.filter(function(x){return x.id!==id;});save();render();break;
+    case 'hubpreset':{var mm=+el.dataset.m;state.hubPreset=mm;var c=document.getElementById('hubclock');if(c)c.textContent=fmtClock(mm*60);var b=document.querySelector('[data-act="hubfocus"]');if(b)b.dataset.m=mm;break;}
+    case 'hubfocus':{var mm2=+(el.dataset.m||state.hubPreset||25);unlockAudio();state.timer={end:Date.now()+mm2*60000,total:mm2*60,label:'Focus session'};save();render();break;}
+    case 'backupfile':{var blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='pocket-adviser-backup-'+today()+'.json';a.click();setTimeout(function(){URL.revokeObjectURL(url);},1000);toast('Backup downloaded.');break;}
+    case 'installapp':{if(installPrompt){installPrompt.prompt();installPrompt.userChoice.then(function(){installPrompt=null;});}else{toast(location.protocol==='https:'?'Use your browser menu → Install app / Add to Home screen.':'For PWA installation, host the app on HTTPS first.');}break;}
+    case 'quizstart':{
+      var sub=(document.getElementById('quizsub')||{}).value||'all',count=+(document.getElementById('quizcount')||{}).value||10;
+      var bank=state.practiceQuestions.filter(function(q){return sub==='all'||q.s===sub;});
+      if(!bank.length){toast('Add questions to your bank before starting a test.');break;}
+      bank.sort(function(){return Math.random()-.5;});state.quizSession={ids:bank.slice(0,Math.min(count,bank.length)).map(function(q){return q.id;}),index:0,answers:{},started:Date.now(),deadline:Date.now()+60000};save();render();break;
+    }
+    case 'quizpick':{if(state.quizSession){var qid=state.quizSession.ids[state.quizSession.index];state.quizSession.answers[qid]=+el.dataset.i;save();render();}break;}
+    case 'quiznext':advanceQuiz();break;
+    case 'quizquit':state.quizSession=null;save();render();break;
+    case 'qreview':state.practiceQuestions.forEach(function(q){if(q.id===id)q.needsReview=!q.needsReview;});save();render();break;
+    case 'qdel':state.practiceQuestions=state.practiceQuestions.filter(function(q){return q.id!==id;});save();render();break;
+    case 'pyqsave':{var exam=(document.getElementById('pyqexam')||{}).value,year=((document.getElementById('pyqyear')||{}).value||'').trim(),subj=(document.getElementById('pyqsub')||{}).value,status=(document.getElementById('pyqstate')||{}).value;if(!year){toast('Enter the paper year or session.');break;}var ky=exam+'|'+year+'|'+subj;state.pyqStatus[ky]={exam:exam,year:year,s:subj,status:status};save();render();toast('PYQ progress saved.');break;}
+    case 'pyqdel':delete state.pyqStatus[id];save();render();break;
+    case 'notifytoggle':{if(el.checked){if(!('Notification' in window)){toast('This browser does not support notifications.');state.notifyEnabled=false;render();break;}Notification.requestPermission().then(function(permission){state.notifyEnabled=permission==='granted';save();render();if(state.notifyEnabled){checkStudyAlerts();toast('Study reminders enabled.');}else toast('Notification permission was not granted.');});}else{state.notifyEnabled=false;save();render();}break;}
+    case 'reset1': resetArm=true;render();break;
+    case 'reset0': resetArm=false;render();break;
+    case 'reset2': state=DEF();save();resetArm=false;render();toast('All data erased.');break;
+  }
+}
+document.addEventListener('click',function(ev){
+  var el=ev.target.closest&&ev.target.closest('[data-act]');
+  if(!el||el.matches('input,select,textarea,form')) return;
+  act(el,'click');
+});
+document.addEventListener('change',function(ev){
+  var el=ev.target;
+  if(!el.matches||!el.matches('input[data-act],select[data-act]')) return;
+  if(el.dataset.act==='planhours'){state.plannerHours=Math.max(1,Math.min(14,Number(el.value)||4));save();render();return;}
+  act(el,'change');
+});
+document.addEventListener('input',function(ev){if(ev.target&&ev.target.id==='dq') doubtDraft=ev.target.value;});
+document.addEventListener('change',function(ev){var f=ev.target;if(f&&f.dataset&&f.dataset.act==='restorefile'&&f.files&&f.files[0]){var rd=new FileReader();rd.onload=function(){try{var obj=JSON.parse(rd.result);if(!obj||typeof obj!=='object'||!obj.stage)throw new Error('bad');state=normaliseState(obj);save();render();toast('Backup restored successfully.');}catch(e){toast('Invalid backup file.');}};rd.readAsText(f.files[0]);}});
+
+document.addEventListener('submit',function(ev){
+  var f=ev.target;ev.preventDefault();
+  var a=f.dataset.act,v;
+  if(a==='addcustom'){
+    v=(f.elements.t.value||'').trim();if(!v) return;
+    var d=f.dataset.date;(state.custom[d]||(state.custom[d]=[])).push({id:uid(),text:v,done:false});save();render();
+  }else if(a==='addmist'){
+    v=(f.elements.t.value||'').trim();if(!v) return;
+    state.mistakes.push({id:uid(),s:f.elements.s.value,t:v,date:today(),fixed:false});save();render();toast('Mistake logged.');
+  }else if(a==='questionadd'){
+    var opts=[0,1,2,3].map(function(i){return (f.elements['o'+i].value||'').trim();});
+    var question=(f.elements.q.value||'').trim(),topic=(f.elements.topic.value||'').trim();
+    if(!question||!topic||opts.some(function(x){return !x;})){toast('Complete the question and all four options.');return;}
+    state.practiceQuestions.push({id:uid(),s:f.elements.s.value,topic:topic,q:question,opts:opts,answer:+f.elements.answer.value,explain:(f.elements.explain.value||'').trim(),needsReview:false});save();render();toast('Question added to your practice bank.');
+  }else if(a==='mockadd'){
+    var name=(f.elements.name.value||'').trim(),score=Number(f.elements.score.value),total=Number(f.elements.total.value),correct=Number(f.elements.correct.value),wrong=Number(f.elements.wrong.value),dt=f.elements.date.value;
+    if(!name||!dt||!Number.isFinite(score)||!Number.isFinite(total)||total<=0||score<0||score>total||correct<0||wrong<0||correct+wrong===0){toast('Please enter valid test details.');return;}
+    state.mockTests.push({id:uid(),name:name,s:f.elements.subject.value||'all',date:dt,score:score,total:total,correct:correct,wrong:wrong,accuracy:Math.round(correct/(correct+wrong)*100)});save();render();toast('Mock result saved.');
+  }else if(a==='addch'){
+    v=(f.elements.n.value||'').trim();if(!v) return;
+    var s=f.dataset.s;state.extra.push({id:'x'+uid(),s:s,n:v});retarget(s);save();render();toast('Chapter added.');
+  }
+});
+
+/* ---------- start ---------- */
+load();
+(function(){var n=new Date();cal.y=n.getFullYear();cal.m=n.getMonth();cal.sel=ymd(n);})();
+render();
+initCloud();
+checkStudyAlerts();
+// Dedicated, delegated navigation handler. The Library tab is the 'papers' view.
+// Capture phase prevents nested content handlers from accidentally overriding the selected view.
+document.getElementById('tabs').addEventListener('click',function(ev){
+  var button=ev.target.closest ? ev.target.closest('button.tab[data-act=\"tab\"]') : null;
+  if(!button) return;
+  var next=button.getAttribute('data-t');
+  if(!TABS.some(function(item){return item[0]===next;})) return;
+  ev.preventDefault(); ev.stopPropagation();
+  var doubt=document.getElementById('dq'); if(doubt) doubtDraft=doubt.value;
+  tab=next; resetArm=false;
+  if(tab==='calendar'&&!cal.sel) cal.sel=today();
+  render();
+},true);
+document.addEventListener('toggle',function(ev){var d=ev.target;if(d&&d.dataset&&d.dataset.ch) openCh[d.dataset.ch]=d.open;},true);
+setInterval(function(){if(tab==='today'&&!editing&&!state.timer&&!(document.activeElement&&document.activeElement.matches&&document.activeElement.matches('input,select,textarea'))) render();},60000);
+setInterval(secondTick,1000);
+setInterval(checkStudyAlerts,60000);
+try{if(window.claude&&window.claude.use){window.claude.use('assets').then(function(a){if(a){assetsApi=a;if(tab==='papers') render();}}).catch(function(){});}}catch(e){}
+try{if(window.claude&&window.claude.use){window.claude.use('sample').then(function(s){if(!s) return;sampleApi=s;
+  Promise.resolve(s.limits?s.limits():null).then(function(l){doubtImg=!!(l&&l.images);if(tab==='doubts') render();}).catch(function(){});
+  if(tab==='doubts') render();}).catch(function(){});}}catch(e){}
+window.__pa={go:function(t){tab=t;render();},state:function(){return state;},tick:secondTick,beep:beep};
+window.__paFormulaSearch=function(q){var el=document.getElementById('formulalist');if(el)el.innerHTML=formulaHTML(q);};
+window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();installPrompt=e;});
+if('serviceWorker' in navigator && location.protocol.indexOf('http')===0){window.addEventListener('load',function(){navigator.serviceWorker.register('./service-worker.js').catch(function(){});});}
+})();
+</script>
+</body>
+</html>
